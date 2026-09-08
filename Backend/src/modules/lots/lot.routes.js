@@ -32,5 +32,6 @@ router.patch('/:id', requireRole('farmer', 'fpo'), lotController.updateLot);
 
 // Farmer/FPO-only: close lot (owner-only enforced in service)
 router.post('/:id/close', requireRole('farmer', 'fpo'), lotController.closeLot);
+router.patch('/:id/close', requireRole('farmer', 'fpo'), lotController.closeLot);
 
 export default router;

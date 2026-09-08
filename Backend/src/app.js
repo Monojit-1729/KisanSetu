@@ -11,6 +11,8 @@ import { demandRoutes } from './modules/demand/index.js';
 import { matchingRoutes } from './modules/matching/index.js';
 import { realizationRoutes } from './modules/realization/index.js';
 import { recommendationRoutes } from './modules/recommendations/index.js';
+import { offerRoutes } from './modules/offers/index.js';
+import { orderRoutes } from './modules/orders/index.js';
 
 const app = express();
 
@@ -44,6 +46,8 @@ app.use('/api/demand', demandRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/realization', realizationRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/offers', offerRoutes);
+app.use('/api/orders', orderRoutes);
 
 // 404 Handler for undefined routes
 app.use((req, res, next) => {

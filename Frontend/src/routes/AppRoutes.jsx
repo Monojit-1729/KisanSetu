@@ -23,6 +23,13 @@ import PostDemand from '../pages/buyer/PostDemand.jsx';
 import MyDemands from '../pages/buyer/MyDemands.jsx';
 import MatchedSupply from '../pages/buyer/MatchedSupply.jsx';
 import BrowseLots from '../pages/buyer/BrowseLots.jsx';
+import FarmerOffers from '../pages/farmer/Offers.jsx';
+import FpoOffers from '../pages/fpo/Offers.jsx';
+import BuyerOffers from '../pages/buyer/Offers.jsx';
+import FarmerOrders from '../pages/farmer/FarmerOrders.jsx';
+import FpoOrders from '../pages/fpo/FpoOrders.jsx';
+import BuyerOrders from '../pages/buyer/BuyerOrders.jsx';
+import OrderDetails from '../pages/orders/OrderDetails.jsx';
 
 // Generic dashboard dispatcher based on authenticated role
 const DashboardDispatcher = () => {
@@ -84,6 +91,22 @@ export const AppRoutes = () => {
           </RoleRoute>
         }
       />
+      <Route
+        path="/farmer/offers"
+        element={
+          <RoleRoute allowedRoles={['farmer', 'fpo']}>
+            <FarmerOffers />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/farmer/orders"
+        element={
+          <RoleRoute allowedRoles={['farmer', 'fpo']}>
+            <FarmerOrders />
+          </RoleRoute>
+        }
+      />
 
       <Route
         path="/fpo/dashboard"
@@ -117,6 +140,22 @@ export const AppRoutes = () => {
           </RoleRoute>
         }
       />
+      <Route
+        path="/fpo/offers"
+        element={
+          <RoleRoute allowedRoles={['fpo']}>
+            <FpoOffers />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/fpo/orders"
+        element={
+          <RoleRoute allowedRoles={['fpo']}>
+            <FpoOrders />
+          </RoleRoute>
+        }
+      />
 
       <Route
         path="/buyer/dashboard"
@@ -131,6 +170,22 @@ export const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['buyer']}>
             <BuyerProfile />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/buyer/offers"
+        element={
+          <RoleRoute allowedRoles={['buyer']}>
+            <BuyerOffers />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/buyer/orders"
+        element={
+          <RoleRoute allowedRoles={['buyer']}>
+            <BuyerOrders />
           </RoleRoute>
         }
       />
@@ -217,6 +272,16 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <LotDetail />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Shared Order Detail */}
+      <Route
+        path="/orders/:id"
+        element={
+          <ProtectedRoute>
+            <OrderDetails />
           </ProtectedRoute>
         }
       />

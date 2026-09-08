@@ -96,12 +96,24 @@ export const FpoDashboard = () => {
             </div>
           </div>
 
-          <nav className="flex items-center space-x-4">
+          <nav className="flex items-center space-x-2 sm:space-x-3">
             <Link
               to="/fpo/dashboard"
               className="text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200"
             >
               Dashboard
+            </Link>
+            <Link
+              to="/fpo/offers"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Offers
+            </Link>
+            <Link
+              to="/fpo/orders"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Orders
             </Link>
             <Link
               to="/fpo/profile"

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import lotsApi from '../../api/lotsApi.js';
+import MakeOfferModal from '../../components/offers/MakeOfferModal.jsx';
 
 const QUALITY_LABELS = { A: 'Grade A — Premium', B: 'Grade B — Standard', C: 'Grade C — Basic' };
 const QUALITY_COLORS = {
@@ -24,6 +25,8 @@ export const LotDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [closing, setClosing] = useState(false);
+  const [showOfferModal, setShowOfferModal] = useState(false);
+  const [offerSuccess, setOfferSuccess] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -204,9 +207,44 @@ export const LotDetail = () => {
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-slate-500 bg-amber-50 border border-amber-200 rounded-xl p-3 mt-3">
-                <strong className="text-amber-800">Note:</strong> Direct contact and offer capabilities will be available in the next phase.
-              </div>
+              {/* Action buttons based on role */}
+              {user?.role === 'buyer' && !isOwner && lot.status === 'active' && (
+                <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  <button
+                    onClick={() => setShowOfferModal(true)}
+                    className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors shadow-xs flex items-center justify-center gap-2"
+                  >
+                    <span>💼</span> Make Commercial Offer
+                  </button>
+                  <p className="text-[11px] text-slate-500 text-center">
+                    Submit custom quantity & unit price for direct farmer negotiation
+                  </p>
+                </div>
+              )}
+
+              {isOwner && (
+                <div className="mt-4 pt-3 border-t border-slate-100">
+                  <Link
+                    to={`/${user?.role || 'farmer'}/offers`}
+                    className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <span>📥</span> View Incoming Offers
+                  </Link>
+                </div>
+              )}
+
+              {offerSuccess && (
+                <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-start justify-between">
+                  <div>
+                    <p className="font-bold">Offer Created!</p>
+                    <p className="mt-0.5">{offerSuccess}</p>
+                    <Link to="/buyer/offers" className="underline font-semibold mt-1 inline-block">
+                      Track in My Offers →
+                    </Link>
+                  </div>
+                  <button onClick={() => setOfferSuccess('')} className="text-emerald-600 font-bold ml-2">✕</button>
+                </div>
+              )}
             </div>
 
             {/* Total value card */}
@@ -258,6 +296,18 @@ export const LotDetail = () => {
           </div>
         </div>
       </main>
+
+      {/* Make Offer Modal */}
+      {showOfferModal && (
+        <MakeOfferModal
+          lot={lot}
+          onClose={() => setShowOfferModal(false)}
+          onSuccess={(createdOffer) => {
+            setShowOfferModal(false);
+            setOfferSuccess(`Offer #${createdOffer.offerId} sent successfully for ₹${createdOffer.offeredTotalAmount?.toLocaleString('en-IN')}`);
+          }}
+        />
+      )}
     </div>
   );
 };

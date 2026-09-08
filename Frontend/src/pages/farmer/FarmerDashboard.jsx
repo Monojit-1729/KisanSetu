@@ -99,12 +99,24 @@ export const FarmerDashboard = () => {
             </div>
           </div>
 
-          <nav className="flex items-center space-x-4">
+          <nav className="flex items-center space-x-2 sm:space-x-3">
             <Link
               to="/farmer/dashboard"
               className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200"
             >
               Dashboard
+            </Link>
+            <Link
+              to="/farmer/offers"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Offers
+            </Link>
+            <Link
+              to="/farmer/orders"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Orders
             </Link>
             <Link
               to="/farmer/profile"
@@ -390,6 +402,45 @@ export const FarmerDashboard = () => {
                     Price Intelligence
                   </Link>
                 </div>
+              </div>
+            </div>
+
+            {/* Transactions & Deal Desk */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+              <div className="bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-200 p-5 shadow-xs flex items-center justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    A6 Transaction Desk
+                  </span>
+                  <h4 className="text-base font-bold text-slate-900 mt-2">Incoming Buyer Offers</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Review, accept, or negotiate counter-proposals with verified buyers.
+                  </p>
+                </div>
+                <Link
+                  to="/farmer/offers"
+                  className="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors shadow-xs"
+                >
+                  View Offers →
+                </Link>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-200 p-5 shadow-xs flex items-center justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-blue-800 bg-blue-100 px-2 py-0.5 rounded-full">
+                    Fulfillment
+                  </span>
+                  <h4 className="text-base font-bold text-slate-900 mt-2">Active Sales Orders</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Track confirmed sales orders, fulfillment progress, and lifecycle status.
+                  </p>
+                </div>
+                <Link
+                  to="/farmer/orders"
+                  className="shrink-0 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-colors shadow-xs"
+                >
+                  Track Orders →
+                </Link>
               </div>
             </div>
 
