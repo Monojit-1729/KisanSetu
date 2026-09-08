@@ -21,8 +21,29 @@ import { analyticsRoutes } from './modules/analytics/index.js';
 const app = express();
 
 // Security & Parsing Middleware
+const clientUrlEnv = process.env.CLIENT_URL;
+const allowedOrigins = clientUrlEnv
+  ? clientUrlEnv.split(',').map((u) => u.trim().replace(/\/$/, ''))
+  : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4173'];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, curl, internal health checks)
+    if (!origin) return callback(null, true);
+
+    const isAllowed =
+      allowedOrigins.includes('*') ||
+      allowedOrigins.includes(origin) ||
+      /^http:\/\/localhost(:\d+)?$/.test(origin) ||
+      /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
+      (clientUrlEnv && origin === clientUrlEnv.replace(/\/$/, ''));
+
+    if (isAllowed || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS origin not allowed: ${origin}`));
+  },
   credentials: true
 }));
 app.use(express.json());

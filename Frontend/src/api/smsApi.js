@@ -1,11 +1,4 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from './client.js';
 
 export const smsApi = {
   /**
@@ -13,7 +6,7 @@ export const smsApi = {
    * @param {Object} payload - { phone, message }
    */
   simulateSms: async ({ phone, message }) => {
-    const res = await api.post('/sms/simulate', { phone, message });
+    const res = await apiClient.post('/sms/simulate', { phone, message });
     return res.data;
   },
 
@@ -22,7 +15,7 @@ export const smsApi = {
    * @param {string} phone
    */
   getSmsHistory: async (phone) => {
-    const res = await api.get('/sms/history', { params: { phone } });
+    const res = await apiClient.get('/sms/history', { params: { phone } });
     return res.data?.history || [];
   },
 
@@ -30,7 +23,7 @@ export const smsApi = {
    * Retrieve registered demo phone numbers.
    */
   getDemoPhones: async () => {
-    const res = await api.get('/sms/demo-phones');
+    const res = await apiClient.get('/sms/demo-phones');
     return res.data?.demoFarmers || [];
   },
 };

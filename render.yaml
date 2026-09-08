@@ -1,0 +1,22 @@
+# Render Deployment Blueprint for KisanSetu Backend API
+services:
+  - type: web
+    name: kisansetu-backend
+    env: node
+    plan: free
+    region: oregon
+    rootDir: Backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        sync: false
