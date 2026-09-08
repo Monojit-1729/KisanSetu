@@ -36,13 +36,29 @@ const LotRow = ({ lot, matchCount, onViewMatches, onPublish, onClose, actionLoad
         <span>{lot.location?.district}, {lot.location?.state}</span>
       </div>
     </div>
-    <div className="flex items-center gap-2 shrink-0">
+    <div className="flex items-center gap-2 shrink-0 flex-wrap">
       <Link
         to={`/marketplace/${lot.id}`}
         className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
       >
         View
       </Link>
+      {lot.status === 'active' && (
+        <Link
+          to={`/farmer/recommendations?lotId=${lot.id || lot._id}`}
+          className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+        >
+          <span>🎯</span> Recommendation
+        </Link>
+      )}
+      {lot.status === 'active' && (
+        <Link
+          to={`/farmer/market-intelligence?lotId=${lot.id || lot._id}`}
+          className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
+        >
+          📊 Markets
+        </Link>
+      )}
       {lot.status === 'active' && matchCount > 0 && (
         <button
           onClick={() => onViewMatches(lot)}

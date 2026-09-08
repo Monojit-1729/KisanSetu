@@ -5,6 +5,7 @@ import fpoApi from '../../api/fpoApi.js';
 import lotsApi from '../../api/lotsApi.js';
 import marketsApi from '../../api/marketsApi.js';
 import matchingApi from '../../api/matchingApi.js';
+import recommendationApi from '../../api/recommendationApi.js';
 
 export const FpoDashboard = () => {
   const { user, logout } = useAuth();
@@ -13,6 +14,8 @@ export const FpoDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeLots, setActiveLots] = useState(null);
+  const [lotsList, setLotsList] = useState([]);
+  const [bestRecommendation, setBestRecommendation] = useState(null);
   const [marketPrice, setMarketPrice] = useState(null);
   const [matchedBuyersCount, setMatchedBuyersCount] = useState(null);
 
@@ -28,6 +31,25 @@ export const FpoDashboard = () => {
 
           lotsApi.getMyStats().then((d) => {
             if (isMounted) setActiveLots(d.activeCount ?? 0);
+          }).catch(() => {});
+
+          lotsApi.getMyLots().then((data) => {
+            if (!isMounted) return;
+            const active = (data.lots || []).filter((l) => l.status === 'active');
+            setLotsList(active);
+
+            if (active.length > 0) {
+              const topLot = active[0];
+              recommendationApi.getForLot(topLot.id || topLot._id).then((rec) => {
+                if (isMounted && rec?.recommendedTopOption) {
+                  setBestRecommendation({
+                    lot: topLot,
+                    ...rec.recommendedTopOption,
+                    explanation: rec.explanation,
+                  });
+                }
+              }).catch(() => {});
+            }
           }).catch(() => {});
 
           matchingApi.getMyLotsMatchSummary().then((summary) => {
@@ -206,6 +228,64 @@ export const FpoDashboard = () => {
               </div>
             </div>
 
+            {/* Best Sales Opportunity Preview Banner */}
+            {bestRecommendation && (
+              <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-emerald-950 text-white rounded-2xl p-6 shadow-sm mb-8 border border-blue-700/50">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="bg-emerald-400 text-emerald-950 font-black text-[10px] uppercase px-2.5 py-0.5 rounded-full shadow-xs">
+                        ⭐ Top Aggregated Opportunity
+                      </span>
+                      <span className="bg-white/10 text-blue-200 text-xs px-2.5 py-0.5 rounded-full">
+                        Lot: {bestRecommendation.lot?.cropName} ({bestRecommendation.lot?.quantity} {bestRecommendation.lot?.unit})
+                      </span>
+                    </div>
+
+                    <h2 className="text-xl font-bold text-white mt-1">
+                      {bestRecommendation.partnerName}
+                    </h2>
+
+                    <p className="text-xs text-blue-100/90 leading-relaxed max-w-2xl line-clamp-2">
+                      {bestRecommendation.explanation}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-5 shrink-0 bg-white/10 backdrop-blur-xs border border-white/10 px-5 py-3.5 rounded-xl">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-emerald-300 block">Est. Net Return</span>
+                      <div className="text-2xl font-black text-white">
+                        ₹{bestRecommendation.netPerQuintal?.toLocaleString('en-IN')}
+                        <span className="text-xs font-normal text-slate-300">/q</span>
+                      </div>
+                    </div>
+
+                    <div className="text-center pl-3 border-l border-white/20">
+                      <span className="text-[10px] uppercase font-bold text-emerald-300 block">Score</span>
+                      <span className="text-xl font-black text-emerald-300">
+                        {bestRecommendation.overallScore}/100
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 pl-2">
+                      <Link
+                        to={`/fpo/recommendations?lotId=${bestRecommendation.lot?.id || bestRecommendation.lot?._id}`}
+                        className="text-xs font-bold px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 rounded-lg transition-colors text-center"
+                      >
+                        Recommendation →
+                      </Link>
+                      <Link
+                        to={`/fpo/market-intelligence?lotId=${bestRecommendation.lot?.id || bestRecommendation.lot?._id}`}
+                        className="text-[11px] font-semibold text-blue-200 hover:text-white text-center"
+                      >
+                        Compare Markets
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Marketplace & Buyer Matches Widgets */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Active Lots Widget */}
@@ -305,6 +385,86 @@ export const FpoDashboard = () => {
                   </Link>
                 </div>
               </div>
+            </div>
+
+            {/* Active Lots — Decision Intelligence Strip */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs mt-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">
+                    Aggregated Produce Lots & Intelligence
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Analyze market channels, evaluate buyer demands, and view explainable dispatch recommendations.
+                  </p>
+                </div>
+
+                <Link
+                  to="/fpo/market-intelligence"
+                  className="text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 self-start sm:self-auto"
+                >
+                  FPO Intelligence Hub →
+                </Link>
+              </div>
+
+              {lotsList.length === 0 ? (
+                <div className="bg-slate-50 rounded-xl p-6 text-center border border-slate-200 text-xs text-slate-500">
+                  <p>No active produce lots listed currently.</p>
+                  <Link
+                    to="/marketplace/create"
+                    className="inline-block mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-xs transition-colors"
+                  >
+                    + Create Aggregated Lot
+                  </Link>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {lotsList.map((lot) => {
+                    const id = lot.id || lot._id;
+                    return (
+                      <div
+                        key={id}
+                        className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/70 rounded-xl px-3 -mx-3 transition-colors"
+                      >
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-slate-900 text-sm">{lot.cropName}</span>
+                            {lot.variety && (
+                              <span className="text-xs text-slate-500">({lot.variety})</span>
+                            )}
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                              Active
+                            </span>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                              Grade {lot.quality || 'A'}
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-500 flex gap-3">
+                            <span>{lot.quantity} {lot.unit}</span>
+                            <span>Target: ₹{lot.pricePerQuintal}/q</span>
+                            <span>{lot.location?.district}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Link
+                            to={`/fpo/market-intelligence?lotId=${id}`}
+                            className="text-xs font-semibold px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                          >
+                            📊 Markets
+                          </Link>
+                          <Link
+                            to={`/fpo/recommendations?lotId=${id}`}
+                            className="text-xs font-semibold px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs transition-colors"
+                          >
+                            🎯 Recommendation
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </>
         )}

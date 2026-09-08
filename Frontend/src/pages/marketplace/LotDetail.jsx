@@ -218,6 +218,37 @@ export const LotDetail = () => {
               <p className="text-xs text-emerald-200 mt-1">{lot.quantity} {lot.unit} × ₹{lot.pricePerQuintal?.toLocaleString('en-IN')}/q</p>
             </div>
 
+            {/* Decision Support Card for Owner */}
+            {isOwner && lot.status === 'active' && (
+              <div className="bg-gradient-to-br from-emerald-900 to-slate-900 text-white rounded-2xl p-5 shadow-sm space-y-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] bg-emerald-400 text-emerald-950 font-bold px-2 py-0.5 rounded">
+                    AI Decision Support
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-white leading-snug">
+                  Where Should You Sell This Lot?
+                </h4>
+                <p className="text-xs text-emerald-100/80 leading-relaxed">
+                  Evaluate real buyer demands, freight tariffs, and local mandi prices to discover your best net return.
+                </p>
+                <div className="flex flex-col gap-2 pt-1">
+                  <Link
+                    to={`/farmer/recommendations?lotId=${lot.id || lot._id}`}
+                    className="block text-center text-xs font-bold text-emerald-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-2 rounded-xl transition-colors shadow-xs"
+                  >
+                    🎯 View Top Recommendation
+                  </Link>
+                  <Link
+                    to={`/farmer/market-intelligence?lotId=${lot.id || lot._id}`}
+                    className="block text-center text-xs font-semibold text-emerald-200 hover:text-white bg-white/10 px-3 py-2 rounded-xl transition-colors"
+                  >
+                    📊 Compare All Markets
+                  </Link>
+                </div>
+              </div>
+            )}
+
             <Link
               to="/marketplace"
               className="block text-center text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl px-4 py-2.5 transition-colors"

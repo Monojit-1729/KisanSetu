@@ -17,6 +17,8 @@ import LotDetail from '../pages/marketplace/LotDetail.jsx';
 import CreateLot from '../pages/marketplace/CreateLot.jsx';
 import MyLots from '../pages/marketplace/MyLots.jsx';
 import MarketIntelligence from '../pages/marketplace/MarketIntelligence.jsx';
+import FarmerMarketIntelligence from '../pages/farmer/MarketIntelligence.jsx';
+import Recommendations from '../pages/farmer/Recommendations.jsx';
 import PostDemand from '../pages/buyer/PostDemand.jsx';
 import MyDemands from '../pages/buyer/MyDemands.jsx';
 import MatchedSupply from '../pages/buyer/MatchedSupply.jsx';
@@ -66,6 +68,22 @@ export const AppRoutes = () => {
           </RoleRoute>
         }
       />
+      <Route
+        path="/farmer/market-intelligence"
+        element={
+          <RoleRoute allowedRoles={['farmer', 'fpo']}>
+            <FarmerMarketIntelligence />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/farmer/recommendations"
+        element={
+          <RoleRoute allowedRoles={['farmer', 'fpo']}>
+            <Recommendations />
+          </RoleRoute>
+        }
+      />
 
       <Route
         path="/fpo/dashboard"
@@ -80,6 +98,22 @@ export const AppRoutes = () => {
         element={
           <RoleRoute allowedRoles={['fpo']}>
             <FpoProfile />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/fpo/market-intelligence"
+        element={
+          <RoleRoute allowedRoles={['farmer', 'fpo']}>
+            <FarmerMarketIntelligence />
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/fpo/recommendations"
+        element={
+          <RoleRoute allowedRoles={['farmer', 'fpo']}>
+            <Recommendations />
           </RoleRoute>
         }
       />
