@@ -118,6 +118,9 @@ export const MarketIntelligence = () => {
             <Link to="/marketplace/intelligence" className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
               Price Intel
             </Link>
+            <Link to="/marketplace/analytics" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+              Analytics & Forecast
+            </Link>
             <div className="h-4 w-px bg-slate-200" />
             <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
               Sign Out
@@ -127,9 +130,17 @@ export const MarketIntelligence = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">APMC Mandi Price Intelligence</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Live arrival prices sourced from Maharashtra APMC mandis — updated daily.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">APMC Mandi Price Intelligence</h1>
+            <p className="text-sm text-slate-500 mt-0.5">Live arrival prices sourced from Maharashtra APMC mandis — updated daily.</p>
+          </div>
+          <Link
+            to={`/marketplace/analytics?district=${selectedDistrict}${selectedCrop ? `&crop=${selectedCrop}` : ''}`}
+            className="self-start sm:self-auto inline-flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-100/80 hover:bg-emerald-200 px-4 py-2.5 rounded-xl border border-emerald-300 transition-colors shadow-xs"
+          >
+            <span>📈 View Price Trends, Arrivals & Forecast →</span>
+          </Link>
         </div>
 
         {/* Filters row */}

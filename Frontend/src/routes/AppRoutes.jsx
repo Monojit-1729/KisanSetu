@@ -17,6 +17,7 @@ import LotDetail from '../pages/marketplace/LotDetail.jsx';
 import CreateLot from '../pages/marketplace/CreateLot.jsx';
 import MyLots from '../pages/marketplace/MyLots.jsx';
 import MarketIntelligence from '../pages/marketplace/MarketIntelligence.jsx';
+import MarketAnalytics from '../pages/marketplace/MarketAnalytics.jsx';
 import FarmerMarketIntelligence from '../pages/farmer/MarketIntelligence.jsx';
 import Recommendations from '../pages/farmer/Recommendations.jsx';
 import PostDemand from '../pages/buyer/PostDemand.jsx';
@@ -248,6 +249,38 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <MarketIntelligence />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/marketplace/analytics"
+        element={
+          <ProtectedRoute>
+            <MarketAnalytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <MarketAnalytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/farmer/analytics"
+        element={
+          <ProtectedRoute>
+            <MarketAnalytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fpo/analytics"
+        element={
+          <ProtectedRoute>
+            <MarketAnalytics />
           </ProtectedRoute>
         }
       />
