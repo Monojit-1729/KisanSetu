@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import ordersApi from '../../api/ordersApi.js';
+import logisticsApi from '../../api/logisticsApi.js';
+import paymentsApi from '../../api/paymentsApi.js';
 import OrderTimeline from '../../components/orders/OrderTimeline.jsx';
+import LogisticsEstimate from '../../components/orders/LogisticsEstimate.jsx';
+import PaymentStatus from '../../components/orders/PaymentStatus.jsx';
 
 const STATUS_TRANSITIONS = {
   confirmed: { next: 'processing', label: 'Mark as Processing / Packing' },
@@ -12,12 +16,21 @@ const STATUS_TRANSITIONS = {
   delivered: { next: 'completed', label: 'Complete Order & Close Contract' },
 };
 
+const QUALITY_STATUS_STYLES = {
+  verified: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', label: 'Verified Quality' },
+  declared: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', label: 'Farmer Declared' },
+  pending: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', label: 'Inspection Pending' },
+  rejected: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', label: 'Quality Rejected' },
+};
+
 export const OrderDetails = () => {
   const { id } = useParams();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [order, setOrder] = useState(null);
+  const [logistics, setLogistics] = useState(null);
+  const [payment, setPayment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
@@ -28,7 +41,31 @@ export const OrderDetails = () => {
     setError('');
     try {
       const data = await ordersApi.getOrderById(id);
-      setOrder(data.order || data.data || data);
+      const fetchedOrder = data.order || data.data || data;
+      setOrder(fetchedOrder);
+
+      // Populate logistics & payment from response or fetch directly
+      if (fetchedOrder.logistics && typeof fetchedOrder.logistics === 'object') {
+        setLogistics(fetchedOrder.logistics);
+      } else {
+        try {
+          const logRes = await logisticsApi.getByOrderId(id);
+          setLogistics(logRes.data || logRes);
+        } catch (lErr) {
+          console.warn('[OrderDetails] Could not fetch logistics:', lErr.message);
+        }
+      }
+
+      if (fetchedOrder.payment && typeof fetchedOrder.payment === 'object') {
+        setPayment(fetchedOrder.payment);
+      } else {
+        try {
+          const payRes = await paymentsApi.getByOrderId(id);
+          setPayment(payRes.data || payRes);
+        } catch (pErr) {
+          console.warn('[OrderDetails] Could not fetch payment:', pErr.message);
+        }
+      }
     } catch (err) {
       setError(err.message || 'Failed to fetch order details');
     } finally {
@@ -39,6 +76,16 @@ export const OrderDetails = () => {
   useEffect(() => {
     fetchOrder();
   }, [id]);
+
+  const handleLogisticsUpdated = (updated) => {
+    setLogistics(updated);
+    fetchOrder();
+  };
+
+  const handlePaymentUpdated = (updated) => {
+    setPayment(updated);
+    fetchOrder();
+  };
 
   const handleUpdateStatus = async (newStatus) => {
     if (!window.confirm(`Update order status to '${newStatus.replace(/_/g, ' ')}'?`)) return;
@@ -203,27 +250,73 @@ export const OrderDetails = () => {
               </div>
             </div>
 
-            {/* Phase 2 Placeholders: Logistics & Payments */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-4 flex items-start gap-3 text-xs">
-                <span className="text-2xl">🚚</span>
+            {/* Produce Quality & Specifications Card */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <span className="font-bold text-blue-900 block">Logistics & Transportation</span>
-                  <p className="text-blue-700 mt-0.5">
-                    {order.deliveryStatusPlaceholder || 'Logistics booking and driver assignment will activate in Phase 2.'}
-                  </p>
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Quality & Produce Specifications</span>
+                  <h3 className="text-base font-bold text-slate-900">
+                    {order.cropName} {order.variety ? `(${order.variety})` : ''} — Grade {order.grade || 'A'}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200">
+                    Grade {order.grade || 'A'}
+                  </span>
+                  {(() => {
+                    const qStatus = order.qualityStatus || 'declared';
+                    const style = QUALITY_STATUS_STYLES[qStatus] || QUALITY_STATUS_STYLES.declared;
+                    return (
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${style.bg} ${style.text} ${style.border}`}>
+                        {style.label}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
 
-              <div className="bg-purple-50/70 border border-purple-200 rounded-2xl p-4 flex items-start gap-3 text-xs">
-                <span className="text-2xl">💳</span>
-                <div>
-                  <span className="font-bold text-purple-900 block">Payment & Settlement</span>
-                  <p className="text-purple-700 mt-0.5">
-                    {order.paymentStatusPlaceholder || 'Direct digital settlement & UPI escrow integration will activate in Phase 2.'}
-                  </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block mb-0.5">Quantity Contracted</span>
+                  <span className="font-bold text-slate-800">{order.quantity} {order.unit || 'quintals'}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block mb-0.5">Quality Assessment</span>
+                  <span className="font-bold text-slate-800 capitalize">{order.qualityStatus || 'declared'}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block mb-0.5">Verification Reference</span>
+                  <span className="font-mono text-slate-700 font-medium">{order.qualityRef || 'Self-declared by producer'}</span>
                 </div>
               </div>
+
+              {order.qualityNotes && (
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600">
+                  <span className="font-semibold text-slate-700 block mb-0.5">Quality Assessment Notes:</span>
+                  <p className="leading-relaxed">{order.qualityNotes}</p>
+                </div>
+              )}
+
+              <p className="text-[11px] text-slate-400 italic">
+                * Note: Grade and quality parameters are captured from the seller lot declaration. Physical batch inspection is advised prior to final settlement.
+              </p>
+            </div>
+
+            {/* Operational Logistics & Payment Systems */}
+            <div className="grid grid-cols-1 gap-6">
+              <LogisticsEstimate
+                logistics={logistics}
+                orderId={order._id || order.id}
+                isParticipant={isBuyer || isSeller}
+                onStatusUpdated={handleLogisticsUpdated}
+              />
+
+              <PaymentStatus
+                payment={payment}
+                orderId={order._id || order.id}
+                isParticipant={isBuyer || isSeller}
+                onStatusUpdated={handlePaymentUpdated}
+              />
             </div>
 
             {/* Status Transition Actions for Participants */}

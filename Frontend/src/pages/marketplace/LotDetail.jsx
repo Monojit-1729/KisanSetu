@@ -168,6 +168,54 @@ export const LotDetail = () => {
               )}
             </div>
 
+            {/* Produce Quality & Specifications Card */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <h4 className="text-sm font-bold text-slate-800">🎖️ Quality & Produce Grading</h4>
+                <span
+                  className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                    lot.qualityStatus === 'verified'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : lot.qualityStatus === 'rejected'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : 'bg-blue-50 text-blue-700 border-blue-200'
+                  }`}
+                >
+                  {lot.qualityStatus === 'verified'
+                    ? '✓ Verified Quality'
+                    : lot.qualityStatus === 'rejected'
+                    ? 'Quality Rejected'
+                    : 'Farmer Self-Declared'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                <div className="bg-slate-50 p-3 rounded-xl">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-0.5">Assigned Grade</span>
+                  <span className="font-bold text-slate-800">{QUALITY_LABELS[lot.quality] || `Grade ${lot.quality}`}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-0.5">Verification Status</span>
+                  <span className="font-bold text-slate-800 capitalize">{lot.qualityStatus || 'declared'}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl col-span-2 sm:col-span-1">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 block mb-0.5">Inspection / Certificate Ref</span>
+                  <span className="font-mono text-slate-700 font-medium">{lot.qualityRef || 'None / Self-Declared'}</span>
+                </div>
+              </div>
+
+              {lot.qualityNotes && (
+                <div className="bg-slate-50 p-3 rounded-xl text-xs text-slate-600">
+                  <span className="font-semibold text-slate-700 block mb-0.5">Quality Assessment Notes:</span>
+                  <p className="leading-relaxed">{lot.qualityNotes}</p>
+                </div>
+              )}
+
+              <p className="text-[11px] text-slate-400 italic">
+                * Note: Quality tier is declared by the producer. Buyers may inspect lots or request grading prior to final dispatch.
+              </p>
+            </div>
+
             {/* Location card */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
               <h4 className="text-sm font-bold text-slate-800 mb-3">📍 Location</h4>

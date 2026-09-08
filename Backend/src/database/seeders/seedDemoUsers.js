@@ -10,6 +10,9 @@ import { BuyerProfile, buyerService } from '../../modules/buyers/index.js';
 import { Lot } from '../../modules/lots/index.js';
 import { MarketPrice } from '../../modules/markets/index.js';
 import { Demand } from '../../modules/demand/index.js';
+import { Order } from '../../modules/orders/index.js';
+import { logisticsService } from '../../modules/logistics/index.js';
+import { paymentService } from '../../modules/payments/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -329,6 +332,9 @@ export const seedDemoLots = async (userMap) => {
       unit: 'quintal',
       pricePerQuintal: 2400,
       quality: 'A',
+      qualityStatus: 'verified',
+      qualityNotes: 'Verified Grade A by Sahyadri Agro Quality Cell. Uniform medium-large bulb size, dry outer skin.',
+      qualityRef: 'QC-NSK-2026-041',
       harvestDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       availableFrom: new Date(),
       location: { state: 'Maharashtra', district: 'Nashik', taluka: 'Dindori', village: 'Janori', pincode: '422206' },
@@ -344,6 +350,9 @@ export const seedDemoLots = async (userMap) => {
       unit: 'quintal',
       pricePerQuintal: 1600,
       quality: 'B',
+      qualityStatus: 'declared',
+      qualityNotes: 'Farmer self-declared Grade B harvest. Firm texture, fresh pick for wholesale distribution.',
+      qualityRef: '',
       harvestDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
       availableFrom: new Date(),
       location: { state: 'Maharashtra', district: 'Nashik', taluka: 'Dindori', village: 'Janori', pincode: '422206' },
@@ -359,6 +368,9 @@ export const seedDemoLots = async (userMap) => {
       unit: 'quintal',
       pricePerQuintal: 7200,
       quality: 'A',
+      qualityStatus: 'verified',
+      qualityNotes: 'Cold-chain sorted and certified residue-free for domestic supermarket wholesale.',
+      qualityRef: 'APEDA-QC-2026-992',
       harvestDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       availableFrom: new Date(),
       location: { state: 'Maharashtra', district: 'Nashik', taluka: 'Niphad', village: 'Vadner', pincode: '422303' },
@@ -374,6 +386,9 @@ export const seedDemoLots = async (userMap) => {
       unit: 'quintal',
       pricePerQuintal: 4900,
       quality: 'B',
+      qualityStatus: 'verified',
+      qualityNotes: 'Standard FCI milling grade, moisture 8.5%, foreign matter <2%.',
+      qualityRef: 'FCI-NIP-2026-108',
       harvestDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
       availableFrom: new Date(),
       location: { state: 'Maharashtra', district: 'Nashik', taluka: 'Sinnar', village: 'Sinnar', pincode: '422103' },
@@ -389,6 +404,9 @@ export const seedDemoLots = async (userMap) => {
       unit: 'quintal',
       pricePerQuintal: 9500,
       quality: 'A',
+      qualityStatus: 'declared',
+      qualityNotes: 'Hand-picked Bhagwa variety, >350g fruit weight, blemish-free.',
+      qualityRef: '',
       harvestDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       availableFrom: new Date(),
       location: { state: 'Maharashtra', district: 'Nashik', taluka: 'Dindori', village: 'Janori', pincode: '422206' },
@@ -411,6 +429,12 @@ export const seedDemoLots = async (userMap) => {
       variety: lotData.variety,
     });
     if (existing) {
+      if (!existing.qualityStatus || existing.qualityStatus === 'declared') {
+        existing.qualityStatus = lotData.qualityStatus;
+        existing.qualityNotes = lotData.qualityNotes;
+        existing.qualityRef = lotData.qualityRef;
+        await existing.save();
+      }
       skipped++;
     } else {
       await Lot.create(lotData);
@@ -595,6 +619,40 @@ export const seedDemoDemands = async () => {
   console.log(`  + Demo demands: ${created} created, ${skipped} already existed`);
 };
 
+export const seedOperationsData = async () => {
+  console.log('[KisanSetu Seeder] Ensuring logistics & payment records for existing orders...');
+  const orders = await Order.find({});
+  let initializedCount = 0;
+
+  for (const order of orders) {
+    let changed = false;
+    if (!order.logistics) {
+      try {
+        const logDoc = await logisticsService.createForOrder(order, order.seller);
+        order.logistics = logDoc._id;
+        changed = true;
+      } catch (err) {
+        console.warn('  - Skipped logistics init for order', order.orderId, err.message);
+      }
+    }
+    if (!order.payment) {
+      try {
+        const payDoc = await paymentService.createForOrder(order, order.buyer);
+        order.payment = payDoc._id;
+        changed = true;
+      } catch (err) {
+        console.warn('  - Skipped payment init for order', order.orderId, err.message);
+      }
+    }
+    if (changed) {
+      await order.save();
+      initializedCount++;
+    }
+  }
+
+  console.log(`  + Operations data: ${initializedCount} orders initialized with logistics/payments`);
+};
+
 
 // If run directly via CLI
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -618,6 +676,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
       // Seed demo demands
       await seedDemoDemands();
+
+      // Seed operations data for orders
+      await seedOperationsData();
 
       console.log('[KisanSetu Seeder] All seeding complete.');
       mongoose.disconnect();

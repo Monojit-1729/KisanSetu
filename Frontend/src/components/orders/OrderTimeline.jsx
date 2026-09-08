@@ -1,18 +1,31 @@
 import React from 'react';
 
 const STAGES = [
-  { id: 'confirmed', label: 'Order Confirmed', description: 'Offer accepted & contract initiated' },
-  { id: 'processing', label: 'Processing & Packaging', description: 'Farm-gate grading & packing' },
-  { id: 'ready_for_dispatch', label: 'Ready for Dispatch', description: 'Produce assembled for transport' },
-  { id: 'in_transit', label: 'In Transit', description: 'Vehicular haulage on the road' },
-  { id: 'delivered', label: 'Delivered', description: 'Arrived at delivery location' },
-  { id: 'completed', label: 'Completed', description: 'Quality accepted & transaction closed' },
+  { id: 'confirmed', label: 'Confirmed', description: 'Contract initiated' },
+  { id: 'logistics_scheduled', label: 'Scheduled', description: 'Logistics planned' },
+  { id: 'in_transit', label: 'In Transit', description: 'Produce dispatched' },
+  { id: 'delivered', label: 'Delivered', description: 'Received at hub' },
+  { id: 'payment_completed', label: 'Payment Settled', description: 'Simulated release' },
+  { id: 'completed', label: 'Completed', description: 'Contract closed' },
 ];
+
+const STAGE_INDEX_MAP = {
+  confirmed: 0,
+  processing: 0,
+  ready_for_dispatch: 1,
+  logistics_scheduled: 1,
+  picked_up: 2,
+  in_transit: 2,
+  delivered: 3,
+  payment_pending: 4,
+  payment_completed: 4,
+  completed: 5,
+};
 
 export const OrderTimeline = ({ currentStatus = 'confirmed', timeline = [] }) => {
   const isCancelled = currentStatus === 'cancelled';
 
-  const currentIdx = STAGES.findIndex((s) => s.id === currentStatus);
+  const currentIdx = STAGE_INDEX_MAP[currentStatus] ?? 0;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-6">

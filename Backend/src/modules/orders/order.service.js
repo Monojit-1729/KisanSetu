@@ -1,12 +1,18 @@
 import { Order } from './order.model.js';
 import { Lot } from '../lots/index.js';
+import logisticsService from '../logistics/logistics.service.js';
+import paymentService from '../payments/payment.service.js';
 
 const ALLOWED_TRANSITIONS = {
-  confirmed: ['processing', 'cancelled'],
-  processing: ['ready_for_dispatch', 'cancelled'],
-  ready_for_dispatch: ['in_transit', 'cancelled'],
+  confirmed: ['processing', 'ready_for_dispatch', 'logistics_scheduled', 'cancelled'],
+  processing: ['ready_for_dispatch', 'logistics_scheduled', 'in_transit', 'cancelled'],
+  ready_for_dispatch: ['logistics_scheduled', 'picked_up', 'in_transit', 'cancelled'],
+  logistics_scheduled: ['picked_up', 'in_transit', 'cancelled'],
+  picked_up: ['in_transit', 'delivered', 'cancelled'],
   in_transit: ['delivered', 'cancelled'],
-  delivered: ['completed'],
+  delivered: ['payment_pending', 'payment_completed', 'completed'],
+  payment_pending: ['payment_completed', 'completed'],
+  payment_completed: ['completed'],
   completed: [],
   cancelled: [],
 };
@@ -48,6 +54,8 @@ export const orderService = {
     const sellerId = offer.seller?._id || offer.seller;
     const lotId = offer.lot?._id || offer.lot;
 
+    const lot = await Lot.findById(lotId);
+
     const order = new Order({
       orderId,
       lot: lotId,
@@ -55,6 +63,11 @@ export const orderService = {
       seller: sellerId,
       acceptedOffer: offer._id,
       cropName: offer.cropName,
+      grade: lot?.quality || 'B',
+      variety: lot?.variety || '',
+      qualityStatus: lot?.qualityStatus || 'declared',
+      qualityNotes: lot?.qualityNotes || '',
+      qualityRef: lot?.qualityRef || '',
       quantity: offer.quantity,
       unit: offer.unit || 'quintal',
       agreedPricePerUnit: offer.offeredPricePerUnit,
@@ -72,9 +85,21 @@ export const orderService = {
 
     await order.save();
 
+    // Auto-initialize operations records (Logistics & Payment)
+    try {
+      await logisticsService.createForOrder(order, requestingUserId);
+    } catch (err) {
+      console.error('[OrderService] Non-fatal warning auto-initializing logistics:', err.message);
+    }
+
+    try {
+      await paymentService.createForOrder(order, requestingUserId);
+    } catch (err) {
+      console.error('[OrderService] Non-fatal warning auto-initializing payment:', err.message);
+    }
+
     // Synchronize Produce Lot quantity/status
     try {
-      const lot = await Lot.findById(lotId);
       if (lot) {
         if (lot.quantity <= offer.quantity) {
           lot.status = 'sold';
@@ -110,8 +135,10 @@ export const orderService = {
     const orders = await Order.find(query)
       .populate('buyer', 'name email role')
       .populate('seller', 'name email role')
-      .populate('lot', 'cropName variety quality location')
+      .populate('lot', 'cropName variety quality location qualityStatus qualityNotes')
       .populate('acceptedOffer', 'offerId offeredPricePerUnit totalOfferedValue message')
+      .populate('logistics')
+      .populate('payment')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -136,6 +163,8 @@ export const orderService = {
       .populate('seller', 'name email role')
       .populate('lot')
       .populate('acceptedOffer')
+      .populate('logistics')
+      .populate('payment')
       .lean();
 
     if (!order) {

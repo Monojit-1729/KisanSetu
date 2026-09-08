@@ -16,6 +16,9 @@ const lotService = {
       unit: data.unit || 'quintal',
       pricePerQuintal: data.pricePerQuintal,
       quality: data.quality || 'B',
+      qualityStatus: data.qualityStatus || 'declared',
+      qualityNotes: data.qualityNotes || '',
+      qualityRef: data.qualityRef || '',
       harvestDate: data.harvestDate ? new Date(data.harvestDate) : undefined,
       availableFrom: data.availableFrom ? new Date(data.availableFrom) : new Date(),
       location: {
@@ -116,8 +119,9 @@ const lotService = {
     if (!lot) return null;
 
     const allowed = [
-      'cropName', 'variety', 'quantity', 'unit', 'pricePerQuintal',
-      'quality', 'harvestDate', 'availableFrom', 'location', 'status', 'description',
+      'variety', 'quantity', 'unit', 'pricePerQuintal',
+      'quality', 'qualityStatus', 'qualityNotes', 'qualityRef',
+      'harvestDate', 'availableFrom', 'location', 'status', 'description',
     ];
     for (const key of allowed) {
       if (data[key] !== undefined) {

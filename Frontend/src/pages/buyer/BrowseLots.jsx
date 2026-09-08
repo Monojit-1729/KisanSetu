@@ -236,13 +236,28 @@ export const BrowseLots = () => {
                           {lot.location?.district}, {lot.location?.state}
                         </p>
                       </div>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                          QUALITY_COLORS[lot.quality] || QUALITY_COLORS.B
-                        }`}
-                      >
-                        Grade {lot.quality}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            QUALITY_COLORS[lot.quality] || QUALITY_COLORS.B
+                          }`}
+                        >
+                          Grade {lot.quality}
+                        </span>
+                        {lot.qualityStatus && (
+                          <span
+                            className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full border ${
+                              lot.qualityStatus === 'verified'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : lot.qualityStatus === 'rejected'
+                                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                : 'bg-blue-50 text-blue-700 border-blue-200'
+                            }`}
+                          >
+                            {lot.qualityStatus === 'verified' ? '✓ Verified' : lot.qualityStatus === 'rejected' ? 'Rejected' : 'Declared'}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 my-3">

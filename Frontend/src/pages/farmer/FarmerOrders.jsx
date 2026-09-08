@@ -165,6 +165,19 @@ export const FarmerOrders = () => {
                       <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 capitalize">
                         {order.orderStatus.replace(/_/g, ' ')}
                       </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                        Grade {order.grade || 'A'}
+                      </span>
+                      {order.logistics?.status && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 capitalize">
+                          🚚 {order.logistics.status.replace(/_/g, ' ')}
+                        </span>
+                      )}
+                      {order.payment?.status && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 capitalize">
+                          💳 {order.payment.status.replace(/_/g, ' ')}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">

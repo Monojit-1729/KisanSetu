@@ -150,7 +150,7 @@ export const FarmerDashboard = () => {
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 mb-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                A2 Marketplace Active
+                A7 Operations Active
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Namaste, {profile?.fullName || user?.name}!

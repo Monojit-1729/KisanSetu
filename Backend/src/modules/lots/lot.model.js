@@ -44,6 +44,22 @@ const lotSchema = new mongoose.Schema(
       enum: ['A', 'B', 'C'],
       default: 'B',
     },
+    qualityStatus: {
+      type: String,
+      enum: ['declared', 'verified', 'pending', 'rejected'],
+      default: 'declared',
+      index: true,
+    },
+    qualityNotes: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    qualityRef: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     harvestDate: {
       type: Date,
     },
