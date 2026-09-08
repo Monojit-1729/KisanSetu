@@ -10,6 +10,7 @@ import { BuyerProfile, buyerService } from '../../modules/buyers/index.js';
 import { Lot } from '../../modules/lots/index.js';
 import { MarketPrice } from '../../modules/markets/index.js';
 import { Demand } from '../../modules/demand/index.js';
+import { Offer } from '../../modules/offers/index.js';
 import { Order } from '../../modules/orders/index.js';
 import { logisticsService } from '../../modules/logistics/index.js';
 import { paymentService } from '../../modules/payments/index.js';
@@ -620,7 +621,140 @@ export const seedDemoDemands = async () => {
 };
 
 export const seedOperationsData = async () => {
-  console.log('[KisanSetu Seeder] Ensuring logistics & payment records for existing orders...');
+  console.log('[KisanSetu Seeder] Ensuring baseline transaction and operations records...');
+
+  // 1. Ensure baseline demo offer and completed order exist
+  const baselineOrderId = 'ORD-DEMO-2026-001';
+  let baselineOrder = await Order.findOne({ orderId: baselineOrderId });
+
+  if (!baselineOrder) {
+    const farmerUser = await User.findOne({ email: 'farmer@kisansetu.in' });
+    const buyerUser = await User.findOne({ email: 'buyer@kisansetu.in' });
+    const onionLot = await Lot.findOne({ owner: farmerUser?._id, cropName: 'Onion' });
+
+    if (farmerUser && buyerUser && onionLot) {
+      const offerId = 'OFF-DEMO-2026-001';
+      let demoOffer = await Offer.findOne({ offerId });
+      if (!demoOffer) {
+        demoOffer = await Offer.create({
+          offerId,
+          lot: onionLot._id,
+          buyer: buyerUser._id,
+          seller: farmerUser._id,
+          cropName: onionLot.cropName,
+          quantity: 20,
+          unit: onionLot.unit || 'quintal',
+          offeredPricePerUnit: 2400,
+          totalOfferedValue: 48000,
+          deliveryLocation: {
+            state: 'Maharashtra',
+            district: 'Pune',
+            address: 'Gultekdi Market Yard, Pune',
+            pincode: '411037',
+          },
+          status: 'accepted',
+          lastActionBy: buyerUser._id,
+          lastActionRole: 'buyer',
+          history: [
+            {
+              action: 'created',
+              by: buyerUser._id,
+              byRole: 'buyer',
+              byName: 'FreshDirect Buyer Procurement',
+              price: 2300,
+              quantity: 20,
+              totalValue: 46000,
+              message: 'Initial procurement offer for Red Nasik onions',
+              timestamp: new Date(Date.now() - 3 * 86400000),
+            },
+            {
+              action: 'countered',
+              by: farmerUser._id,
+              byRole: 'farmer',
+              byName: 'Ramesh Patel',
+              price: 2400,
+              quantity: 20,
+              totalValue: 48000,
+              message: 'Grade A verified onions, countered to ₹2400/q',
+              timestamp: new Date(Date.now() - 2 * 86400000),
+            },
+            {
+              action: 'accepted',
+              by: buyerUser._id,
+              byRole: 'buyer',
+              byName: 'FreshDirect Buyer Procurement',
+              price: 2400,
+              quantity: 20,
+              totalValue: 48000,
+              message: 'Counter-offer accepted. Generating dispatch order.',
+              timestamp: new Date(Date.now() - 1 * 86400000),
+            },
+          ],
+        });
+        console.log('  + Seeded baseline demo offer OFF-DEMO-2026-001');
+      }
+
+      baselineOrder = await Order.create({
+        orderId: baselineOrderId,
+        lot: onionLot._id,
+        buyer: buyerUser._id,
+        seller: farmerUser._id,
+        acceptedOffer: demoOffer._id,
+        cropName: onionLot.cropName,
+        variety: onionLot.variety || 'Red Nasik',
+        grade: onionLot.quality || 'A',
+        qualityStatus: onionLot.qualityStatus || 'verified',
+        qualityNotes: onionLot.qualityNotes || 'Verified Grade A by Sahyadri Agro Quality Cell.',
+        qualityRef: onionLot.qualityRef || 'QC-NSK-2026-041',
+        quantity: 20,
+        unit: onionLot.unit || 'quintal',
+        agreedPricePerUnit: 2400,
+        totalValue: 48000,
+        orderStatus: 'completed',
+        timeline: [
+          {
+            status: 'confirmed',
+            updatedBy: buyerUser._id,
+            note: 'Order confirmed upon acceptance of offer OFF-DEMO-2026-001',
+            timestamp: new Date(Date.now() - 2 * 86400000),
+          },
+          {
+            status: 'logistics_scheduled',
+            updatedBy: farmerUser._id,
+            note: 'Dispatch carrier assigned',
+            timestamp: new Date(Date.now() - 36 * 3600000),
+          },
+          {
+            status: 'picked_up',
+            updatedBy: farmerUser._id,
+            note: 'Consignment picked up from Janori farm depot',
+            timestamp: new Date(Date.now() - 24 * 3600000),
+          },
+          {
+            status: 'in_transit',
+            updatedBy: farmerUser._id,
+            note: 'Vehicle in transit on Nashik-Pune expressway',
+            timestamp: new Date(Date.now() - 18 * 3600000),
+          },
+          {
+            status: 'delivered',
+            updatedBy: buyerUser._id,
+            note: 'Consignment received and weighed at Pune depot',
+            timestamp: new Date(Date.now() - 12 * 3600000),
+          },
+          {
+            status: 'completed',
+            updatedBy: buyerUser._id,
+            note: 'Settlement confirmed, transaction closed',
+            timestamp: new Date(Date.now() - 6 * 3600000),
+          },
+        ],
+      });
+      console.log('  + Seeded baseline completed demo order ORD-DEMO-2026-001');
+    }
+  }
+
+  // 2. Ensure logistics & payment records for all orders
   const orders = await Order.find({});
   let initializedCount = 0;
 
@@ -629,6 +763,11 @@ export const seedOperationsData = async () => {
     if (!order.logistics) {
       try {
         const logDoc = await logisticsService.createForOrder(order, order.seller);
+        if (order.orderStatus === 'completed') {
+          logDoc.status = 'delivered';
+          logDoc.actualDeliveryDate = new Date();
+          await logDoc.save();
+        }
         order.logistics = logDoc._id;
         changed = true;
       } catch (err) {
@@ -638,6 +777,13 @@ export const seedOperationsData = async () => {
     if (!order.payment) {
       try {
         const payDoc = await paymentService.createForOrder(order, order.buyer);
+        if (order.orderStatus === 'completed') {
+          payDoc.status = 'completed';
+          payDoc.paymentMethod = 'bank_transfer';
+          payDoc.transactionRef = 'NEFT-SIM-20260908-7712';
+          payDoc.paidAt = new Date();
+          await payDoc.save();
+        }
         order.payment = payDoc._id;
         changed = true;
       } catch (err) {

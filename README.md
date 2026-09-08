@@ -259,11 +259,112 @@ Each role lands on a tailored dashboard with live completion meters, contextual 
 
 ---
 
-## 🗺️ Incremental Implementation Roadmap
+## 🚀 Production Deployment & Cloud Architecture
 
-- **Phase 1 (Foundation)**: Project shell, Auth foundation, Profile management, Crop/Lot foundation, Market-price data foundation.
-- **Phase 2 (Marketplace)**: Buyer procurement demand, supply listings, lot filtering, negotiation offers.
-- **Phase 3 (Decision Engine)**: Transport estimation, APMC cess, Gross vs. Net Realisation calculator, explainable recommendation ranking.
-- **Phase 4 (Accessibility)**: Keypad-phone SMS/IVR command parser and simulator.
-- **Phase 5 (Analytics)**: Price trends, seasonal arrival patterns, predictive indicators.
-- **Phase 6 (Logistics & Governance)**: Order state machine, simulated payments, dispute/grievance tracking, verification audit.
+KisanSetu is architected for zero-configuration modern cloud deployment:
+
+```
+[ Frontend: Vercel ]  ----( HTTPS / REST / JWT )---->  [ Backend: Render ]
+      │                                                        │
+      │ (SPA Rewrites via vercel.json)                         │ (Mongoose ODM)
+      ▼                                                        ▼
+[ Client Browser (Responsive) ]                         [ MongoDB Atlas ]
+```
+
+### 1. Frontend on Vercel
+- **Root Directory**: `Frontend`
+- **Framework Preset**: Vite
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **SPA Routing Rewrite**: Handled automatically via [`Frontend/vercel.json`](file:///d:/My%20codes/Projects/SIH26132/KisanSetu/Frontend/vercel.json) to ensure direct route refreshes (`/farmer/dashboard`, `/buyer/demand`, `/orders/...`) resolve cleanly to `index.html`.
+- **Environment Variables**:
+  | Variable | Value Example | Description |
+  |---|---|---|
+  | `VITE_API_URL` | `https://kisansetu-backend.onrender.com/api` | Public HTTPS base URL of the deployed backend API |
+
+### 2. Backend on Render
+- **Root Directory**: `Backend`
+- **Environment**: Node.js
+- **Build Command**: `npm install`
+- **Start Command**: `npm start`
+- **Blueprint**: Included via [`render.yaml`](file:///d:/My%20codes/Projects/SIH26132/KisanSetu/render.yaml)
+- **Health Check Path**: `GET /api/health`
+- **Environment Variables**:
+  | Variable | Production Value Example | Description |
+  |---|---|---|
+  | `NODE_ENV` | `production` | Enables production optimizations and strict error hygiene |
+  | `PORT` | `10000` | Injected automatically by Render container |
+  | `CLIENT_URL` | `https://kisansetu.vercel.app` | Allowed CORS frontend origin(s) |
+  | `MONGODB_URI` | `mongodb+srv://user:pass@cluster.mongodb.net/kisansetu` | MongoDB Atlas cluster connection URI |
+  | `JWT_SECRET` | `secure_random_production_secret_key` | Secret key for signing authentication JWT tokens |
+  | `PILOT_STATE` | `Maharashtra` | Target agricultural pilot state |
+
+### 3. Database on MongoDB Atlas
+- Compatible with MongoDB Atlas M0 (Free) or dedicated tiers.
+- Connects securely using standard TLS/SRV connection strings (`MONGODB_URI`).
+
+---
+
+## 🧪 Demo Seeding & Deterministic Testing
+
+KisanSetu includes an idempotent, deterministic demo seeder that populates all required accounts, market benchmarks, produce supply, buyer demand, and operational orders:
+
+```bash
+# Seed all demo users, 30-day APMC prices, lots, demands, and baseline order:
+npm run seed:demo
+```
+
+### Verified Demo Accounts
+
+| Role | Email | Password | Assigned Portal | Purpose |
+|---|---|---|---|---|
+| **Farmer** | `farmer@kisansetu.in` | `Farmer@123` | `/farmer/dashboard` | Produce listing, net-realization, offers, delivery |
+| **Buyer** | `buyer@kisansetu.in` | `Buyer@123` | `/buyer/dashboard` | Procurement demand, lot matching, bidding, settlement |
+| **FPO** | `fpo@kisansetu.in` | `Fpo@123` | `/fpo/dashboard` | Member aggregation, bulk supply, dispatch |
+| **Admin** | `admin@kisansetu.in` | `Admin@123` | `/admin/dashboard` | System metrics, user verification, platform health |
+
+---
+
+## 🌾 End-to-End Demo Journey
+
+The application supports a complete, multi-turn commercial transaction lifecycle:
+
+1. **Farmer Authentication & Produce Lot**:
+   - Login as `farmer@kisansetu.in`.
+   - Inspect active produce lots (e.g. **Tomato**, Grade B or **Onion**, Grade A).
+2. **Market Intelligence & Price Discovery**:
+   - Benchmark against prevailing Maharashtra APMC mandi prices (Nashik, Pune, Solapur, etc.).
+   - Review 30-day historical price trends and short-horizon forecasts ($T+1$, $T+2$).
+3. **Buyer Matching & Net Realisation**:
+   - Evaluate multi-channel opportunities ranked by net realization:
+     $$\text{Net Realisation} = \text{Offer Price} - (\text{Transport} + \text{Mandi Cess} + \text{Handling})$$
+4. **Negotiation & Deal Closure**:
+   - Buyer (`buyer@kisansetu.in`) posts demand or submits commercial offer.
+   - Farmer counters or accepts. Order is automatically created with quality snapshots.
+5. **Logistics & Settlement Operations**:
+   - Trace milestone dispatch progression (`scheduled` $\rightarrow$ `picked_up` $\rightarrow$ `in_transit` $\rightarrow$ `delivered`).
+   - Execute simulated escrow release (`pending` $\rightarrow$ `processing` $\rightarrow$ `completed`).
+6. **2G SMS Channel Coherence**:
+   - Test low-bandwidth feature phone channel on `/sms-demo`:
+   - Send `SELL 2000 TOMATO` from registered phone `+91 98230 11223` and receive instant structured intelligence.
+
+---
+
+## ⚖️ Data Provenance: Real vs. Prototype Components
+
+| Component | Provenance Classification | Explanation |
+|---|---|---|
+| **APMC Mandi Rates** | Benchmark Data | Modeled on actual historical Agmarknet/MSAMB modal prices across Maharashtra mandis. |
+| **Price Forecasting** | Prototype Estimate | Short-horizon $T+1$/$T+2$ moving-average estimate with uncertainty intervals ($\pm ₹\text{XX}$). Strictly decision-support. |
+| **Supply-Demand Matching** | Algorithmic Engine | Deterministic 6-dimension scoring engine evaluating crop, quality, location, quantity, timing, and trust. |
+| **Logistics Tracking** | Deterministic Model | Distance and freight calculated using Maharashtra inter-district route metrics and standard tariffs (₹15/q + ₹0.40/q/km). |
+| **Payment Settlement** | Simulated Escrow | State machine tracking commercial escrow milestones. No live banking debits occur. |
+| **SMS Channel** | Browser Simulator | Full 2G keypad phone simulation of GSM AT-command/SMS gateway parsing without requiring paid telecom hardware. |
+
+---
+
+## 🔒 Branch & Git Strategy
+
+- **Development Branch**: `diganta-solo`
+- Work is isolated from `main` to ensure non-destructive iteration during the hackathon evaluation period.
+
