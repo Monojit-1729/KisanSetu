@@ -15,6 +15,7 @@ import { offerRoutes } from './modules/offers/index.js';
 import { orderRoutes } from './modules/orders/index.js';
 import { logisticsRoutes } from './modules/logistics/index.js';
 import { paymentRoutes } from './modules/payments/index.js';
+import { smsRoutes } from './modules/sms/index.js';
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/logistics', logisticsRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/sms', smsRoutes);
 
 // 404 Handler for undefined routes
 app.use((req, res, next) => {

@@ -72,6 +72,12 @@ export const Home = () => {
           >
             Access Portal Sign In
           </Link>
+          <Link
+            to="/sms"
+            className="px-6 py-3 text-sm font-semibold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+          >
+            <span>📱</span> Keypad SMS Simulator
+          </Link>
         </div>
 
         <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
@@ -104,6 +110,27 @@ export const Home = () => {
               Post verified demand requirements, discover quality-graded supply lots, and establish direct traceability.
             </p>
           </div>
+        </div>
+
+        {/* Feature-Phone SMS Accessibility Card */}
+        <div className="mt-8 bg-gradient-to-r from-slate-900 to-emerald-950 text-white p-6 rounded-2xl border border-slate-800 shadow-md flex flex-col sm:flex-row items-center justify-between gap-5 text-left">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full mb-1">
+              <span>📶</span> A8 Feature-Phone Accessibility
+            </div>
+            <h3 className="text-base font-bold text-white mt-1">
+              No Smartphone? Access KisanSetu via Basic 2G SMS
+            </h3>
+            <p className="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed">
+              Farmers can send simple text keywords like <code>SELL 2000 TOMATO</code> from any keypad phone to receive transparent APMC rates, freight deductions, net realization, and suitable buyers.
+            </p>
+          </div>
+          <Link
+            to="/sms"
+            className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition-colors whitespace-nowrap shadow-sm shrink-0"
+          >
+            Open SMS Simulator →
+          </Link>
         </div>
       </main>
 

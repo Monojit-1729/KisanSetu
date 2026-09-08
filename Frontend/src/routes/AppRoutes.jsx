@@ -30,6 +30,7 @@ import FarmerOrders from '../pages/farmer/FarmerOrders.jsx';
 import FpoOrders from '../pages/fpo/FpoOrders.jsx';
 import BuyerOrders from '../pages/buyer/BuyerOrders.jsx';
 import OrderDetails from '../pages/orders/OrderDetails.jsx';
+import SmsDemo from '../pages/sms/SmsDemo.jsx';
 
 // Generic dashboard dispatcher based on authenticated role
 const DashboardDispatcher = () => {
@@ -47,6 +48,8 @@ export const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/sms" element={<SmsDemo />} />
+      <Route path="/sms-demo" element={<SmsDemo />} />
 
       {/* Authenticated Catch-all Dashboard */}
       <Route

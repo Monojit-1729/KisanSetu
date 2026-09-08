@@ -124,6 +124,12 @@ export const FarmerDashboard = () => {
             >
               My Profile
             </Link>
+            <Link
+              to="/sms"
+              className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors"
+            >
+              📱 2G SMS
+            </Link>
             <div className="h-4 w-px bg-slate-200"></div>
             <div className="text-right hidden sm:block">
               <div className="text-xs font-semibold text-slate-800">{user?.name}</div>
