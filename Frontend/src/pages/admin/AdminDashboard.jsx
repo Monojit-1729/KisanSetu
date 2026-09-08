@@ -73,7 +73,7 @@ export const AdminDashboard = () => {
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200 mb-2">
                 <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-                Phase 1.2: System Oversight Active
+                System Oversight Active
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Platform Administration Dashboard

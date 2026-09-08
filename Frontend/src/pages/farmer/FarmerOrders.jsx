@@ -56,28 +56,28 @@ export const FarmerOrders = () => {
             </Link>
           </div>
 
-          <nav className="flex items-center space-x-3">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 shrink-0">
             <Link
               to={dashboardLink}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Dashboard
             </Link>
             <Link
               to={offersLink}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Incoming Offers
             </Link>
             <Link
               to="/marketplace/my-lots"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               My Lots
             </Link>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>
@@ -146,6 +146,14 @@ export const FarmerOrders = () => {
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               When buyers' commercial purchase offers are accepted, confirmed orders will appear here automatically.
             </p>
+            <div className="pt-3">
+              <Link
+                to={offersLink}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200"
+              >
+                Review Incoming Offers →
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">

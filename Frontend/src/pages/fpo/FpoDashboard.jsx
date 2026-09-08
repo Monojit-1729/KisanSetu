@@ -96,42 +96,42 @@ export const FpoDashboard = () => {
             </div>
           </div>
 
-          <nav className="flex items-center space-x-2 sm:space-x-3">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 max-w-[65%] sm:max-w-none shrink-0">
             <Link
               to="/fpo/dashboard"
-              className="text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200"
+              className="text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 shrink-0"
             >
               Dashboard
             </Link>
             <Link
               to="/fpo/offers"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Offers
             </Link>
             <Link
               to="/fpo/orders"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Orders
             </Link>
             <Link
               to="/fpo/profile"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               FPO Profile
             </Link>
-            <div className="h-4 w-px bg-slate-200"></div>
-            <div className="text-right hidden sm:block">
+            <div className="h-4 w-px bg-slate-200 shrink-0"></div>
+            <div className="text-right hidden sm:block shrink-0">
               <div className="text-xs font-semibold text-slate-800">{user?.name}</div>
               <div className="text-[10px] text-slate-500">{user?.email}</div>
             </div>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800 border border-blue-200 shrink-0">
               FPO
             </span>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>

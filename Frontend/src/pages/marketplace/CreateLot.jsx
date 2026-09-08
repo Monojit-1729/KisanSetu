@@ -102,14 +102,17 @@ export const CreateLot = () => {
               <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">List Produce</span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/marketplace/my-lots" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <nav className="flex items-center gap-2 sm:gap-3 overflow-x-auto py-1 shrink-0">
+            <Link to={`/${user?.role}/dashboard`} className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
+              Dashboard
+            </Link>
+            <Link to="/marketplace/my-lots" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
               My Lots
             </Link>
-            <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
+            <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
               Sign Out
             </button>
-          </div>
+          </nav>
         </div>
       </header>
 

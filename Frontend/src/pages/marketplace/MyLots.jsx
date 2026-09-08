@@ -184,22 +184,28 @@ export const MyLots = () => {
               <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">My Lots</span>
             </div>
           </div>
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-2 sm:gap-3 overflow-x-auto py-1 shrink-0">
             <Link
               to={`/${user?.role}/dashboard`}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Dashboard
             </Link>
             <Link
               to="/marketplace"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Browse
             </Link>
+            <Link
+              to="/farmer/offers"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
+            >
+              Offers
+            </Link>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>
@@ -414,14 +420,30 @@ export const MyLots = () => {
                 )}
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                <span>Phase A3 Read-Only view. Formal offer submission will activate in Phase A4.</span>
-                <button
-                  onClick={() => setSelectedLot(null)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
-                >
-                  Close
-                </button>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 text-slate-600">
+                  <span>💡 Direct buyer matching active.</span>
+                  <Link
+                    to={`/farmer/recommendations?lotId=${selectedLot.id || selectedLot._id}`}
+                    className="font-bold text-emerald-700 hover:text-emerald-800 underline"
+                  >
+                    Evaluate Net Realization →
+                  </Link>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    to="/farmer/offers"
+                    className="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors"
+                  >
+                    View Offers Desk
+                  </Link>
+                  <button
+                    onClick={() => setSelectedLot(null)}
+                    className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>

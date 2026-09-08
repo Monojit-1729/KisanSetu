@@ -112,23 +112,23 @@ export const LotList = () => {
               <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">Marketplace</span>
             </div>
           </div>
-          <nav className="flex items-center space-x-3">
-            <Link to={`/${user?.role}/dashboard`} className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 shrink-0">
+            <Link to={`/${user?.role}/dashboard`} className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
               Dashboard
             </Link>
-            <Link to="/marketplace" className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+            <Link to="/marketplace" className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 shrink-0">
               Browse
             </Link>
-            <Link to="/marketplace/intelligence" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+            <Link to="/marketplace/intelligence" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
               Price Intel
             </Link>
             {canCreateLot && (
-              <Link to="/marketplace/my-lots" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+              <Link to="/marketplace/my-lots" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
                 My Lots
               </Link>
             )}
-            <div className="h-4 w-px bg-slate-200" />
-            <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
+            <div className="h-4 w-px bg-slate-200 shrink-0" />
+            <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
               Sign Out
             </button>
           </nav>

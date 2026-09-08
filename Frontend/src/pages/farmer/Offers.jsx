@@ -97,28 +97,28 @@ export const FarmerOffers = () => {
             </Link>
           </div>
 
-          <nav className="flex items-center space-x-3">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 shrink-0">
             <Link
               to={isFpo ? '/fpo/dashboard' : '/farmer/dashboard'}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Dashboard
             </Link>
             <Link
               to={isFpo ? '/fpo/orders' : '/farmer/orders'}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               My Orders
             </Link>
             <Link
               to="/marketplace/my-lots"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               My Lots
             </Link>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>
@@ -218,6 +218,14 @@ export const FarmerOffers = () => {
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               Commercial purchase offers submitted by interested buyers will appear here with price and terms.
             </p>
+            <div className="pt-3">
+              <Link
+                to="/marketplace/my-lots"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200"
+              >
+                View Active Produce Lots →
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">

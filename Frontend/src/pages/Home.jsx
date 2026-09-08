@@ -116,7 +116,7 @@ export const Home = () => {
         <div className="mt-8 bg-gradient-to-r from-slate-900 to-emerald-950 text-white p-6 rounded-2xl border border-slate-800 shadow-md flex flex-col sm:flex-row items-center justify-between gap-5 text-left">
           <div>
             <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full mb-1">
-              <span>📶</span> A8 Feature-Phone Accessibility
+              <span>📶</span> Feature-Phone 2G SMS Channel
             </div>
             <h3 className="text-base font-bold text-white mt-1">
               No Smartphone? Access KisanSetu via Basic 2G SMS

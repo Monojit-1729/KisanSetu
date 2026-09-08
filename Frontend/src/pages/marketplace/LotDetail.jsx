@@ -92,9 +92,14 @@ export const LotDetail = () => {
               <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">Lot Detail</span>
             </div>
           </div>
-          <Link to="/marketplace" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-            ← Browse All Lots
-          </Link>
+          <nav className="flex items-center gap-2 sm:gap-3 overflow-x-auto py-1 shrink-0">
+            <Link to={`/${user?.role}/dashboard`} className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
+              Dashboard
+            </Link>
+            <Link to="/marketplace" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
+              Browse Lots
+            </Link>
+          </nav>
         </div>
       </header>
 
