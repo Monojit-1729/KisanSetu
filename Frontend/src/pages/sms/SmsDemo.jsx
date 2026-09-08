@@ -108,22 +108,28 @@ export const SmsDemo = () => {
               <div>
                 <span className="font-bold text-white text-lg leading-tight block tracking-tight">KisanSetu</span>
                 <span className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">
-                  A8 SMS Feature-Phone Channel
+                  2G SMS Feature-Phone Channel
                 </span>
               </div>
             </Link>
           </div>
 
-          <nav className="flex items-center space-x-3">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 shrink-0">
             <Link
               to="/farmer/dashboard"
-              className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+              className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors shrink-0"
             >
               Farmer Web Portal
             </Link>
             <Link
+              to="/marketplace/intelligence"
+              className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors shrink-0"
+            >
+              Market Prices
+            </Link>
+            <Link
               to="/"
-              className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+              className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors shrink-0"
             >
               Home
             </Link>

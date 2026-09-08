@@ -293,6 +293,15 @@ export const Recommendations = () => {
                           {topOption.overallScore} / 100
                         </span>
                       </div>
+
+                      <div className="mt-4 pt-3 border-t border-white/15">
+                        <Link
+                          to={topOption.channelType === 'buyer' ? '/farmer/offers' : `/marketplace/analytics?crop=${recommendationData.lotSummary?.cropName}&district=${topOption.destinationLocation || 'Nashik'}`}
+                          className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold text-xs rounded-xl transition-colors shadow-xs"
+                        >
+                          {topOption.channelType === 'buyer' ? '💼 View Buyer Offers & Deals →' : '📈 View Market Analytics →'}
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -344,6 +353,7 @@ export const Recommendations = () => {
                           <th className="py-3 px-3">APMC Cess & Fees</th>
                           <th className="py-3 px-3">Est. Net Realisation</th>
                           <th className="py-3 px-3 text-center">Score</th>
+                          <th className="py-3 px-3 text-right">Action</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -409,6 +419,23 @@ export const Recommendations = () => {
                                 >
                                   {opp.overallScore}/100
                                 </span>
+                              </td>
+                              <td className="py-3.5 px-3 text-right">
+                                {opp.channelType === 'buyer' ? (
+                                  <Link
+                                    to="/farmer/offers"
+                                    className="inline-block text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+                                  >
+                                    Offers →
+                                  </Link>
+                                ) : (
+                                  <Link
+                                    to={`/marketplace/analytics?crop=${recommendationData.lotSummary?.cropName}&district=${opp.destinationLocation || 'Nashik'}`}
+                                    className="inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                                  >
+                                    Trends →
+                                  </Link>
+                                )}
                               </td>
                             </tr>
                           );

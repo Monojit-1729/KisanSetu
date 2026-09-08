@@ -64,55 +64,55 @@ export const BuyerDashboard = () => {
             </div>
           </div>
 
-          <nav className="flex items-center space-x-2 sm:space-x-3">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 max-w-[65%] sm:max-w-none shrink-0">
             <Link
               to="/buyer/dashboard"
-              className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200"
+              className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 shrink-0"
             >
               Dashboard
             </Link>
             <Link
               to="/buyer/demands"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Demands
             </Link>
             <Link
               to="/buyer/offers"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Offers
             </Link>
             <Link
               to="/buyer/orders"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Orders
             </Link>
             <Link
               to="/buyer/supply"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Browse Supply
             </Link>
             <Link
               to="/buyer/profile"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Profile
             </Link>
             <Link
               to="/buyer/demand/create"
-              className="text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg transition-colors shadow-xs"
+              className="text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg transition-colors shadow-xs shrink-0"
             >
               + Post Demand
             </Link>
-            <div className="h-4 w-px bg-slate-200"></div>
-            <div className="text-right hidden sm:block">
+            <div className="h-4 w-px bg-slate-200 shrink-0"></div>
+            <div className="text-right hidden sm:block shrink-0">
               <div className="text-xs font-semibold text-slate-800">{user?.name}</div>
               <div className="text-[10px] text-slate-500">{user?.email}</div>
             </div>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200 shrink-0">
               Buyer
             </span>
             <button
@@ -318,7 +318,7 @@ export const BuyerDashboard = () => {
               <div className="bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-200 p-5 shadow-xs flex items-center justify-between gap-4">
                 <div>
                   <span className="text-[10px] font-bold uppercase text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
-                    A6 Transaction Desk
+                    Transaction Desk
                   </span>
                   <h4 className="text-base font-bold text-slate-900 mt-2">Active Commercial Offers</h4>
                   <p className="text-xs text-slate-600 mt-0.5">

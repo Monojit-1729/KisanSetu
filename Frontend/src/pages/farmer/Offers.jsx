@@ -19,6 +19,7 @@ export const FarmerOffers = () => {
   const [counterMessage, setCounterMessage] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [successBanner, setSuccessBanner] = useState('');
+  const [createdOrder, setCreatedOrder] = useState(null);
 
   const fetchOffers = async () => {
     setLoading(true);
@@ -41,6 +42,7 @@ export const FarmerOffers = () => {
     setActionLoading(true);
     setError('');
     setSuccessBanner('');
+    setCreatedOrder(null);
     try {
       const res = await offersApi.respondToOffer(offerId, {
         action,
@@ -48,6 +50,7 @@ export const FarmerOffers = () => {
       });
 
       if (action === 'accept' && res.order) {
+        setCreatedOrder(res.order);
         setSuccessBanner(
           `Offer accepted! Order #${res.order.orderId || res.order.id} has been automatically generated.`
         );
@@ -153,8 +156,24 @@ export const FarmerOffers = () => {
         {/* Notifications */}
         {successBanner && (
           <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs p-4 rounded-2xl font-semibold flex items-center justify-between shadow-xs animate-in fade-in">
-            <span>✓ {successBanner}</span>
-            <button onClick={() => setSuccessBanner('')} className="text-emerald-700 hover:text-emerald-900 font-bold ml-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span>✓ {successBanner}</span>
+              {createdOrder && (
+                <Link
+                  to={`/orders/${createdOrder.orderId || createdOrder.id || createdOrder._id}`}
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition-colors shadow-xs"
+                >
+                  Inspect Order →
+                </Link>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setSuccessBanner('');
+                setCreatedOrder(null);
+              }}
+              className="text-emerald-700 hover:text-emerald-900 font-bold ml-3 cursor-pointer"
+            >
               ✕
             </button>
           </div>
@@ -261,6 +280,22 @@ export const FarmerOffers = () => {
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-700">
                       <span className="font-bold text-slate-900 block mb-0.5">Buyer Note:</span>
                       "{offer.message}"
+                    </div>
+                  )}
+
+                  {/* Accepted Contract Link */}
+                  {offer.status === 'accepted' && (
+                    <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-emerald-700 font-bold">✓ Official Purchase Order Generated</span>
+                        <span className="text-slate-500">· Fulfillment in progress</span>
+                      </div>
+                      <Link
+                        to={isFpo ? '/fpo/orders' : '/farmer/orders'}
+                        className="text-xs font-bold text-emerald-800 bg-white hover:bg-emerald-50 border border-emerald-300 px-3.5 py-1.5 rounded-lg transition-colors shadow-xs self-start sm:self-auto"
+                      >
+                        View in Orders Desk →
+                      </Link>
                     </div>
                   )}
 

@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Lot } from '../lots/index.js';
 import { MarketPrice, marketService } from '../markets/index.js';
 import { BuyerProfile } from '../buyers/index.js';
@@ -14,7 +15,9 @@ const recommendationService = {
    * @param {string} [userRole='farmer'] - Role of the requesting user
    */
   async getLotRecommendations(lotId, userId, userRole) {
-    const lot = await Lot.findById(lotId).populate('owner', 'name email role').lean();
+    const isObjectId = mongoose.Types.ObjectId.isValid(lotId);
+    const query = isObjectId ? { $or: [{ _id: lotId }, { lotId }] } : { lotId };
+    const lot = await Lot.findOne(query).populate('owner', 'name email role').lean();
     if (!lot) {
       const err = new Error('Lot not found');
       err.statusCode = 404;

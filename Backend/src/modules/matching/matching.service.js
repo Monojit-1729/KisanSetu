@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Demand } from '../demand/index.js';
 import { Lot } from '../lots/index.js';
 
@@ -82,7 +83,9 @@ const matchingService = {
    * Find all active farmer/FPO lots that match a buyer's procurement demand.
    */
   async findMatchesForDemand(demandId) {
-    const demand = await Demand.findById(demandId).populate('buyer', 'name email role').lean();
+    const isObjectId = mongoose.Types.ObjectId.isValid(demandId);
+    const query = isObjectId ? { $or: [{ _id: demandId }, { demandId }] } : { demandId };
+    const demand = await Demand.findOne(query).populate('buyer', 'name email role').lean();
     if (!demand) return null;
 
     // Search active lots matching cropName (case-insensitive)
@@ -179,7 +182,9 @@ const matchingService = {
    * Find all active buyer demands that match a farmer/FPO's active lot (Read-Only Visibility).
    */
   async findMatchesForLot(lotId) {
-    const lot = await Lot.findById(lotId).populate('owner', 'name email role').lean();
+    const isObjectId = mongoose.Types.ObjectId.isValid(lotId);
+    const query = isObjectId ? { $or: [{ _id: lotId }, { lotId }] } : { lotId };
+    const lot = await Lot.findOne(query).populate('owner', 'name email role').lean();
     if (!lot) return null;
 
     const cropRegex = new RegExp(`^${lot.cropName.trim()}$`, 'i');

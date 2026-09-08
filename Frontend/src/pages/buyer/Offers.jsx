@@ -18,6 +18,7 @@ export const BuyerOffers = () => {
   const [counterMessage, setCounterMessage] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [successBanner, setSuccessBanner] = useState('');
+  const [createdOrder, setCreatedOrder] = useState(null);
 
   const fetchOffers = async () => {
     setLoading(true);
@@ -40,6 +41,7 @@ export const BuyerOffers = () => {
     setActionLoading(true);
     setError('');
     setSuccessBanner('');
+    setCreatedOrder(null);
     try {
       const res = await offersApi.respondToOffer(offerId, {
         action,
@@ -47,6 +49,7 @@ export const BuyerOffers = () => {
       });
 
       if (action === 'accept' && res.order) {
+        setCreatedOrder(res.order);
         setSuccessBanner(
           `Counter accepted! Official Order #${res.order.orderId || res.order.id} generated.`
         );
@@ -149,9 +152,25 @@ export const BuyerOffers = () => {
 
         {/* Banners */}
         {successBanner && (
-          <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs p-4 rounded-2xl font-semibold flex items-center justify-between shadow-xs">
-            <span>✓ {successBanner}</span>
-            <button onClick={() => setSuccessBanner('')} className="text-emerald-700 hover:text-emerald-900 font-bold ml-3">
+          <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs p-4 rounded-2xl font-semibold flex items-center justify-between shadow-xs animate-in fade-in">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span>✓ {successBanner}</span>
+              {createdOrder && (
+                <Link
+                  to={`/orders/${createdOrder.orderId || createdOrder.id || createdOrder._id}`}
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition-colors shadow-xs"
+                >
+                  Inspect Order →
+                </Link>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setSuccessBanner('');
+                setCreatedOrder(null);
+              }}
+              className="text-emerald-700 hover:text-emerald-900 font-bold ml-3 cursor-pointer"
+            >
               ✕
             </button>
           </div>
@@ -271,9 +290,17 @@ export const BuyerOffers = () => {
                         </span>
                       )}
                       {isAccepted && (
-                        <span className="text-xs text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold">
-                          ✓ Offer Accepted — Order Confirmed
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 font-semibold">
+                            ✓ Offer Accepted — Order Confirmed
+                          </span>
+                          <Link
+                            to="/buyer/orders"
+                            className="text-xs font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg border border-emerald-300 transition-colors shadow-xs"
+                          >
+                            View Orders Desk →
+                          </Link>
+                        </div>
                       )}
                     </div>
 

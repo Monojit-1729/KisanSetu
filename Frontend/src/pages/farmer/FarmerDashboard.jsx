@@ -99,48 +99,48 @@ export const FarmerDashboard = () => {
             </div>
           </div>
 
-          <nav className="flex items-center space-x-2 sm:space-x-3">
+          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 max-w-[65%] sm:max-w-none shrink-0">
             <Link
               to="/farmer/dashboard"
-              className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200"
+              className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 shrink-0"
             >
               Dashboard
             </Link>
             <Link
               to="/farmer/offers"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Offers
             </Link>
             <Link
               to="/farmer/orders"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               Orders
             </Link>
             <Link
               to="/farmer/profile"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
             >
               My Profile
             </Link>
             <Link
               to="/sms"
-              className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors"
+              className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors shrink-0"
             >
               📱 2G SMS
             </Link>
-            <div className="h-4 w-px bg-slate-200"></div>
-            <div className="text-right hidden sm:block">
+            <div className="h-4 w-px bg-slate-200 shrink-0"></div>
+            <div className="text-right hidden sm:block shrink-0">
               <div className="text-xs font-semibold text-slate-800">{user?.name}</div>
               <div className="text-[10px] text-slate-500">{user?.email}</div>
             </div>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
               Farmer
             </span>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>
@@ -156,7 +156,7 @@ export const FarmerDashboard = () => {
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 mb-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                A7 Operations Active
+                Platform Active
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Namaste, {profile?.fullName || user?.name}!
@@ -427,7 +427,7 @@ export const FarmerDashboard = () => {
               <div className="bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-200 p-5 shadow-xs flex items-center justify-between gap-4">
                 <div>
                   <span className="text-[10px] font-bold uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                    A6 Transaction Desk
+                    Transaction Desk
                   </span>
                   <h4 className="text-base font-bold text-slate-900 mt-2">Incoming Buyer Offers</h4>
                   <p className="text-xs text-slate-600 mt-0.5">
