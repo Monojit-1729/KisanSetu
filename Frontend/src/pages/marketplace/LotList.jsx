@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import lotsApi from '../../api/lotsApi.js';
+import { FILTER_GRADE_OPTIONS } from '../../data/masterData.js';
 
 const QUALITY_LABELS = { A: 'Grade A', B: 'Grade B', C: 'Grade C' };
 const QUALITY_COLORS = {
@@ -186,10 +187,11 @@ export const LotList = () => {
               onChange={handleFilterChange}
               className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             >
-              <option value="">All Grades</option>
-              <option value="A">Grade A</option>
-              <option value="B">Grade B</option>
-              <option value="C">Grade C</option>
+              {FILTER_GRADE_OPTIONS.map((g) => (
+                <option key={g.value} value={g.value}>
+                  {g.label}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex gap-2">

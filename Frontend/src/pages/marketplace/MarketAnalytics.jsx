@@ -4,8 +4,9 @@ import useAuth from '../../hooks/useAuth.js';
 import marketsApi from '../../api/marketsApi.js';
 import analyticsApi from '../../api/analyticsApi.js';
 import PriceTrendChart from '../../components/charts/PriceTrendChart.jsx';
+import { SUPPORTED_APMC_DISTRICTS, CANONICAL_CROPS } from '../../data/masterData.js';
 
-const DEFAULT_DISTRICTS = ['Nashik', 'Pune', 'Solapur', 'Aurangabad', 'Kolhapur'];
+const DEFAULT_DISTRICTS = SUPPORTED_APMC_DISTRICTS;
 const HORIZONS = [
   { label: '7 Days', value: 7 },
   { label: '14 Days', value: 14 },
@@ -46,7 +47,9 @@ export const MarketAnalytics = () => {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (mounted) setAvailableCrops(CANONICAL_CROPS);
+      });
 
     marketsApi
       .getDistinctDistricts()

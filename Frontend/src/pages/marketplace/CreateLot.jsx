@@ -3,7 +3,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import lotsApi from '../../api/lotsApi.js';
 
-const CROP_OPTIONS = ['Onion', 'Tomato', 'Soybean', 'Wheat', 'Grapes', 'Pomegranate', 'Cotton', 'Potato', 'Green Chilli', 'Sugarcane', 'Maize', 'Bajra'];
+import {
+  INDIAN_STATES_AND_UTS,
+  getDistrictsForState,
+  getSubDistrictsForDistrict,
+  getSubDistrictTermForState,
+  CANONICAL_CROPS,
+  PRODUCE_UNITS,
+} from '../../data/masterData.js';
 
 const FieldGroup = ({ label, children }) => (
   <div>
@@ -43,6 +50,32 @@ export const CreateLot = () => {
   const set = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  const availableDistricts = getDistrictsForState(form.state);
+  const availableSubDistricts = getSubDistrictsForDistrict(form.state, form.district);
+  const subDistrictTerm = getSubDistrictTermForState(form.state);
+
+  const handleStateChange = (e) => {
+    const newState = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      state: newState,
+      district: '',
+      taluka: '',
+    }));
+    if (errors.district) setErrors((prev) => ({ ...prev, district: '' }));
+  };
+
+  const handleDistrictChange = (e) => {
+    const newDistrict = e.target.value;
+    const subs = getSubDistrictsForDistrict(form.state, newDistrict);
+    setForm((prev) => ({
+      ...prev,
+      district: newDistrict,
+      taluka: subs.includes(prev.taluka) ? prev.taluka : '',
+    }));
+    if (errors.district) setErrors((prev) => ({ ...prev, district: '' }));
   };
 
   const validate = () => {
@@ -140,7 +173,7 @@ export const CreateLot = () => {
                   className={inputCls}
                 >
                   <option value="">Select crop…</option>
-                  {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+                  {CANONICAL_CROPS.map((c) => <option key={c} value={c}>{c}</option>)}
                   <option value="__other">Other (type below)</option>
                 </select>
                 {form.cropName === '__other' && (
@@ -205,11 +238,13 @@ export const CreateLot = () => {
                     <select
                       value={form.unit}
                       onChange={(e) => set('unit', e.target.value)}
-                      className={`${inputCls} w-32`}
+                      className={`${inputCls} w-36`}
                     >
-                      <option value="quintal">Quintal</option>
-                      <option value="kg">kg</option>
-                      <option value="tonne">Tonne</option>
+                      {PRODUCE_UNITS.map((u) => (
+                        <option key={u.value} value={u.value}>
+                          {u.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   {errors.quantity && <p className="text-red-600 text-xs mt-1">{errors.quantity}</p>}
@@ -261,23 +296,83 @@ export const CreateLot = () => {
           {/* Location */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <h2 className="text-sm font-bold text-slate-800 pb-3 border-b border-slate-100">Pickup Location</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FieldGroup label="District *">
-                <input
-                  type="text"
-                  placeholder="e.g. Nashik"
-                  value={form.district}
-                  onChange={(e) => set('district', e.target.value)}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <FieldGroup label="State / UT *">
+                <select
+                  required
+                  value={form.state}
+                  onChange={handleStateChange}
                   className={inputCls}
-                />
+                >
+                  <option value="">-- Select State / UT --</option>
+                  {INDIAN_STATES_AND_UTS.map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
+                  ))}
+                </select>
+              </FieldGroup>
+
+              <FieldGroup label="District *">
+                <select
+                  required
+                  value={form.district}
+                  onChange={handleDistrictChange}
+                  disabled={!form.state || availableDistricts.length === 0}
+                  className={`${inputCls} ${errors.district ? 'border-red-400 bg-red-50' : ''}`}
+                >
+                  <option value="">
+                    {!form.state
+                      ? '-- Select State First --'
+                      : availableDistricts.length === 0
+                      ? '-- No districts available --'
+                      : '-- Select District --'}
+                  </option>
+                  {availableDistricts.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                  {form.district && !availableDistricts.includes(form.district) && (
+                    <option key={form.district} value={form.district}>
+                      {form.district} (Current)
+                    </option>
+                  )}
+                </select>
                 {errors.district && <p className="text-red-600 text-xs mt-1">{errors.district}</p>}
               </FieldGroup>
-              <FieldGroup label="Taluka">
-                <input type="text" placeholder="e.g. Dindori" value={form.taluka} onChange={(e) => set('taluka', e.target.value)} className={inputCls} />
+
+              <FieldGroup label={subDistrictTerm ? `${subDistrictTerm} / Sub-district` : 'Sub-district'}>
+                <select
+                  value={form.taluka}
+                  onChange={(e) => set('taluka', e.target.value)}
+                  disabled={!form.district || availableSubDistricts.length === 0}
+                  className={inputCls}
+                >
+                  <option value="">
+                    {!form.district
+                      ? '-- Select District First --'
+                      : availableSubDistricts.length === 0
+                      ? `-- No ${subDistrictTerm.toLowerCase()}s available --`
+                      : `-- Select ${subDistrictTerm} --`}
+                  </option>
+                  {availableSubDistricts.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                  {form.taluka && !availableSubDistricts.includes(form.taluka) && (
+                    <option key={form.taluka} value={form.taluka}>
+                      {form.taluka} (Current)
+                    </option>
+                  )}
+                </select>
               </FieldGroup>
+
               <FieldGroup label="Village">
                 <input type="text" placeholder="e.g. Janori" value={form.village} onChange={(e) => set('village', e.target.value)} className={inputCls} />
               </FieldGroup>
+
               <FieldGroup label="Pincode">
                 <input type="text" placeholder="e.g. 422206" value={form.pincode} onChange={(e) => set('pincode', e.target.value)} className={inputCls} />
               </FieldGroup>

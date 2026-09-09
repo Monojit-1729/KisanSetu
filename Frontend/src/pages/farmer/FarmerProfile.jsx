@@ -8,22 +8,11 @@ import {
   getSubDistrictsForDistrict,
   getSubDistrictTermForState,
   normalizeDistrict,
-} from './locations.js';
-
-const COMMON_CROPS = [
-  'Onion',
-  'Soybean',
-  'Tomato',
-  'Wheat',
-  'Cotton',
-  'Rice',
-  'Sugarcane',
-  'Maize',
-  'Gram',
-  'Grapes',
-  'Pomegranate',
-  'Potato',
-];
+  CANONICAL_CROPS,
+  SOIL_TYPES,
+  IRRIGATION_SOURCES,
+  SUPPORTED_LANGUAGES,
+} from '../../data/masterData.js';
 
 export const FarmerProfile = () => {
   const { user, logout } = useAuth();
@@ -444,7 +433,7 @@ export const FarmerProfile = () => {
                 Click to select crops you actively harvest or plan to sell through KisanSetu:
               </p>
               <div className="flex flex-wrap gap-2">
-                {COMMON_CROPS.map((crop) => {
+                {CANONICAL_CROPS.map((crop) => {
                   const isSelected = formData.cropInterests.includes(crop);
                   return (
                     <button
@@ -468,7 +457,7 @@ export const FarmerProfile = () => {
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                 <span>🚜</span> 3. Agricultural Landholding & Language
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Total Land (Acres)</label>
                   <input
@@ -490,10 +479,37 @@ export const FarmerProfile = () => {
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
                   >
                     <option value="">Select soil type</option>
-                    <option value="Black Cotton">Black Cotton Loam</option>
-                    <option value="Alluvial">Alluvial / Fertile Silt</option>
-                    <option value="Red / Laterite">Red Soil / Laterite</option>
-                    <option value="Sandy Loam">Sandy Loam</option>
+                    {SOIL_TYPES.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                    {formData.soilType && !SOIL_TYPES.some((s) => s.value === formData.soilType) && (
+                      <option key={formData.soilType} value={formData.soilType}>
+                        {formData.soilType} (Current)
+                      </option>
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Irrigation Source</label>
+                  <select
+                    value={formData.irrigationSource}
+                    onChange={(e) => setFormData({ ...formData, irrigationSource: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                  >
+                    <option value="">Select irrigation source</option>
+                    {IRRIGATION_SOURCES.map((i) => (
+                      <option key={i.value} value={i.value}>
+                        {i.label}
+                      </option>
+                    ))}
+                    {formData.irrigationSource && !IRRIGATION_SOURCES.some((i) => i.value === formData.irrigationSource) && (
+                      <option key={formData.irrigationSource} value={formData.irrigationSource}>
+                        {formData.irrigationSource} (Current)
+                      </option>
+                    )}
                   </select>
                 </div>
 
@@ -504,9 +520,11 @@ export const FarmerProfile = () => {
                     onChange={(e) => setFormData({ ...formData, preferredLanguage: e.target.value })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
                   >
-                    <option value="mr">Marathi (मराठी)</option>
-                    <option value="hi">Hindi (हिन्दी)</option>
-                    <option value="en">English</option>
+                    {SUPPORTED_LANGUAGES.map((l) => (
+                      <option key={l.value} value={l.value}>
+                        {l.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

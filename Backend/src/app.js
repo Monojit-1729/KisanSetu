@@ -18,6 +18,7 @@ import { logisticsRoutes } from './modules/logistics/index.js';
 import { paymentRoutes } from './modules/payments/index.js';
 import { smsRoutes } from './modules/sms/index.js';
 import { analyticsRoutes } from './modules/analytics/index.js';
+import metaRoutes from './modules/meta/meta.routes.js';
 
 const app = express();
 
@@ -80,6 +81,7 @@ app.use('/api/logistics', logisticsRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/meta', metaRoutes);
 
 // 404 Handler for undefined routes
 app.use((req, res, next) => {

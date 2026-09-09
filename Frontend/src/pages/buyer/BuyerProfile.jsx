@@ -3,20 +3,13 @@ import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import buyerApi from '../../api/buyerApi.js';
 
-const BUYER_CROPS = [
-  'Onion',
-  'Tomato',
-  'Potato',
-  'Soybean',
-  'Wheat',
-  'Rice',
-  'Cotton',
-  'Green Chilli',
-  'Grapes',
-  'Pomegranate',
-  'Maize',
-  'Pulses / Dal',
-];
+import {
+  INDIAN_STATES_AND_UTS,
+  getDistrictsForState,
+  normalizeDistrict,
+  CANONICAL_CROPS,
+  BUYER_CATEGORIES,
+} from '../../data/masterData.js';
 
 export const BuyerProfile = () => {
   const { user, logout } = useAuth();
@@ -48,11 +41,15 @@ export const BuyerProfile = () => {
         if (isMounted) {
           const p = res?.data?.profile;
           if (p) {
+            const rawState = p.location?.state || 'Maharashtra';
+            const rawDistrict = p.location?.district || '';
+            const normalizedDistrict = normalizeDistrict(rawState, rawDistrict);
+
             setFormData({
               businessName: p.businessName || user?.name || '',
               buyerType: p.buyerType || 'wholesaler',
-              state: p.location?.state || 'Maharashtra',
-              district: p.location?.district || '',
+              state: rawState,
+              district: normalizedDistrict,
               facilityAddress: p.location?.facilityAddress || '',
               pincode: p.location?.pincode || '',
               contactPerson: p.contactInfo?.contactPerson || user?.name || '',
@@ -88,6 +85,24 @@ export const BuyerProfile = () => {
       isMounted = false;
     };
   }, [user]);
+
+  const availableDistricts = getDistrictsForState(formData.state);
+
+  const handleStateChange = (e) => {
+    const newState = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      state: newState,
+      district: '',
+    }));
+  };
+
+  const handleDistrictChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      district: e.target.value,
+    }));
+  };
 
   const handleCropToggle = (crop) => {
     setFormData((prev) => {
@@ -261,36 +276,77 @@ export const BuyerProfile = () => {
                     onChange={(e) => setFormData({ ...formData, buyerType: e.target.value })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
                   >
-                    <option value="wholesaler">Wholesaler / APMC Trader</option>
-                    <option value="processor">Food Processing Unit</option>
-                    <option value="retailer">Retail / Modern Grocery Chain</option>
-                    <option value="institutional">Institutional / Hotel / Catering</option>
-                    <option value="aggregator">Inter-State Aggregator</option>
-                    <option value="trader">Commission Agent / Broker</option>
+                    {BUYER_CATEGORIES.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                    {formData.buyerType && !BUYER_CATEGORIES.some((c) => c.value === formData.buyerType) && (
+                      <option key={formData.buyerType} value={formData.buyerType}>
+                        {formData.buyerType} (Current)
+                      </option>
+                    )}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">Delivery State</label>
-                  <input
-                    type="text"
-                    value={formData.state}
-                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    placeholder="State"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
-                  />
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Delivery State / UT *</label>
+                  <div className="relative">
+                    <select
+                      required
+                      value={formData.state}
+                      onChange={handleStateChange}
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white appearance-none cursor-pointer"
+                    >
+                      <option value="">-- Select State / UT --</option>
+                      {INDIAN_STATES_AND_UTS.map((st) => (
+                        <option key={st} value={st}>
+                          {st}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Primary District / Hub *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    placeholder="e.g. Pune, Mumbai, Nagpur"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
-                  />
+                  <div className="relative">
+                    <select
+                      required
+                      value={formData.district}
+                      onChange={handleDistrictChange}
+                      disabled={!formData.state || availableDistricts.length === 0}
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {!formData.state
+                          ? '-- Select State First --'
+                          : availableDistricts.length === 0
+                          ? '-- No districts available --'
+                          : '-- Select District --'}
+                      </option>
+                      {availableDistricts.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                      {formData.district && !availableDistricts.includes(formData.district) && (
+                        <option key={formData.district} value={formData.district}>
+                          {formData.district} (Current)
+                        </option>
+                      )}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="sm:col-span-2">
@@ -353,7 +409,7 @@ export const BuyerProfile = () => {
                 <span>📦</span> 3. Target Procurement Commodities
               </h3>
               <div className="flex flex-wrap gap-2">
-                {BUYER_CROPS.map((crop) => {
+                {CANONICAL_CROPS.map((crop) => {
                   const isSelected = formData.interestedCrops.includes(crop);
                   return (
                     <button

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import lotsApi from '../../api/lotsApi.js';
+import { FILTER_GRADE_OPTIONS } from '../../data/masterData.js';
 
 const QUALITY_COLORS = {
   A: 'bg-emerald-100 text-emerald-800 border-emerald-200',
@@ -10,7 +11,7 @@ const QUALITY_COLORS = {
 };
 
 export const BrowseLots = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [lots, setLots] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -178,10 +179,11 @@ export const BrowseLots = () => {
                 onChange={handleFilterChange}
                 className="w-full text-xs border border-slate-200 rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
               >
-                <option value="">All Grades</option>
-                <option value="A">Grade A (Premium)</option>
-                <option value="B">Grade B (Standard)</option>
-                <option value="C">Grade C (Basic)</option>
+                {FILTER_GRADE_OPTIONS.map((g) => (
+                  <option key={g.value} value={g.value}>
+                    {g.label}
+                  </option>
+                ))}
               </select>
             </div>
 

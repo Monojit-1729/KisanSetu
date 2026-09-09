@@ -2,50 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import marketsApi from '../../api/marketsApi.js';
-
-// Simple inline SVG sparkline — no library dependencies
-const Sparkline = ({ data, width = 120, height = 40 }) => {
-  if (!data || data.length < 2) {
-    return <span className="text-[10px] text-slate-400">No trend data</span>;
-  }
-  const prices = data.map((d) => d.modalPrice);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const range = max - min || 1;
-
-  const pts = prices
-    .slice(-14) // last 14 points
-    .map((p, i, arr) => {
-      const x = (i / (arr.length - 1)) * width;
-      const y = height - ((p - min) / range) * height;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(' ');
-
-  const lastPrice = prices[prices.length - 1];
-  const firstPrice = prices[0];
-  const isUp = lastPrice >= firstPrice;
-
-  return (
-    <svg width={width} height={height} className="overflow-visible">
-      <polyline
-        fill="none"
-        stroke={isUp ? '#10b981' : '#ef4444'}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        points={pts}
-      />
-    </svg>
-  );
-};
-
-const DISTRICTS = ['Nashik', 'Pune', 'Solapur', 'Aurangabad', 'Kolhapur'];
+import { SUPPORTED_APMC_DISTRICTS, CANONICAL_CROPS } from '../../data/masterData.js';
 
 export const MarketIntelligence = () => {
   const { user, logout } = useAuth();
 
-  const [selectedDistrict, setSelectedDistrict] = useState(DISTRICTS[0]);
+  const [availableDistricts, setAvailableDistricts] = useState(SUPPORTED_APMC_DISTRICTS);
+  const [selectedDistrict, setSelectedDistrict] = useState(SUPPORTED_APMC_DISTRICTS[0] || 'Nashik');
   const [selectedCrop, setSelectedCrop] = useState('');
   const [availableCrops, setAvailableCrops] = useState([]);
 
@@ -55,9 +18,21 @@ export const MarketIntelligence = () => {
   const [loadingTs, setLoadingTs] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch metadata crops list
+  // Fetch metadata crops and districts list
   useEffect(() => {
-    marketsApi.getDistinctCrops().then((d) => setAvailableCrops(d.crops || [])).catch(() => {});
+    marketsApi
+      .getDistinctCrops()
+      .then((d) => setAvailableCrops(d.crops?.length ? d.crops : CANONICAL_CROPS))
+      .catch(() => setAvailableCrops(CANONICAL_CROPS));
+
+    marketsApi
+      .getDistinctDistricts()
+      .then((d) => {
+        if (d.districts?.length) {
+          setAvailableDistricts(d.districts);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Fetch latest prices per crop for selected district
@@ -152,7 +127,7 @@ export const MarketIntelligence = () => {
               onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedCrop(''); }}
               className="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-w-[160px]"
             >
-              {DISTRICTS.map((d) => <option key={d} value={d}>{d}</option>)}
+              {availableDistricts.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
           <div>

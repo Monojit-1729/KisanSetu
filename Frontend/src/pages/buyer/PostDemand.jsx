@@ -3,22 +3,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import demandApi from '../../api/demandApi.js';
 
-const CROP_OPTIONS = [
-  'Onion',
-  'Tomato',
-  'Soybean',
-  'Wheat',
-  'Grapes',
-  'Pomegranate',
-  'Cotton',
-  'Potato',
-  'Green Chilli',
-  'Sugarcane',
-  'Maize',
-  'Bajra',
-];
-
-const DISTRICT_OPTIONS = ['Nashik', 'Pune', 'Solapur', 'Aurangabad', 'Kolhapur', 'Ahmednagar', 'Jalgaon'];
+import {
+  INDIAN_STATES_AND_UTS,
+  getDistrictsForState,
+  getSubDistrictsForDistrict,
+  getSubDistrictTermForState,
+  CANONICAL_CROPS,
+  PRODUCE_UNITS,
+  DEMAND_QUALITY_OPTIONS,
+} from '../../data/masterData.js';
 
 const FieldGroup = ({ label, children, required }) => (
   <div>
@@ -33,7 +26,7 @@ const inputCls =
   'w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all';
 
 export const PostDemand = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -61,6 +54,32 @@ export const PostDemand = () => {
   const set = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  const availableDistricts = getDistrictsForState(form.deliveryState);
+  const availableSubDistricts = getSubDistrictsForDistrict(form.deliveryState, form.deliveryDistrict);
+  const subDistrictTerm = getSubDistrictTermForState(form.deliveryState);
+
+  const handleStateChange = (e) => {
+    const newState = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      deliveryState: newState,
+      deliveryDistrict: '',
+      taluka: '',
+    }));
+    if (errors.deliveryDistrict) setErrors((prev) => ({ ...prev, deliveryDistrict: '' }));
+  };
+
+  const handleDistrictChange = (e) => {
+    const newDistrict = e.target.value;
+    const subs = getSubDistrictsForDistrict(form.deliveryState, newDistrict);
+    setForm((prev) => ({
+      ...prev,
+      deliveryDistrict: newDistrict,
+      taluka: subs.includes(prev.taluka) ? prev.taluka : '',
+    }));
+    if (errors.deliveryDistrict) setErrors((prev) => ({ ...prev, deliveryDistrict: '' }));
   };
 
   const validate = () => {
@@ -211,7 +230,7 @@ export const PostDemand = () => {
                   className={`${inputCls} ${errors.cropName ? 'border-red-400 bg-red-50' : ''}`}
                 />
                 <datalist id="crop-options">
-                  {CROP_OPTIONS.map((c) => (
+                  {CANONICAL_CROPS.map((c) => (
                     <option key={c} value={c} />
                   ))}
                 </datalist>
@@ -245,18 +264,21 @@ export const PostDemand = () => {
 
               <FieldGroup label="Measurement Unit">
                 <select value={form.unit} onChange={(e) => set('unit', e.target.value)} className={inputCls}>
-                  <option value="quintal">Quintal (100 kg)</option>
-                  <option value="tonne">Tonne (1,000 kg)</option>
-                  <option value="kg">Kilogram (kg)</option>
+                  {PRODUCE_UNITS.map((u) => (
+                    <option key={u.value} value={u.value}>
+                      {u.label}
+                    </option>
+                  ))}
                 </select>
               </FieldGroup>
 
               <FieldGroup label="Acceptable Grade">
                 <select value={form.quality} onChange={(e) => set('quality', e.target.value)} className={inputCls}>
-                  <option value="Any">Any Grade (A, B, or C)</option>
-                  <option value="A">Grade A (Premium)</option>
-                  <option value="B">Grade B (Standard)</option>
-                  <option value="C">Grade C (Basic)</option>
+                  {DEMAND_QUALITY_OPTIONS.map((g) => (
+                    <option key={g.value} value={g.value}>
+                      {g.label}
+                    </option>
+                  ))}
                 </select>
               </FieldGroup>
             </div>
@@ -280,27 +302,76 @@ export const PostDemand = () => {
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Delivery Logistics & Window</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FieldGroup label="Delivery State">
-                <input
-                  type="text"
-                  value={form.deliveryState}
-                  onChange={(e) => set('deliveryState', e.target.value)}
-                  className={inputCls}
-                />
-              </FieldGroup>
-
-              <FieldGroup label="Delivery District" required>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <FieldGroup label="Delivery State / UT *">
                 <select
-                  value={form.deliveryDistrict}
-                  onChange={(e) => set('deliveryDistrict', e.target.value)}
-                  className={`${inputCls} ${errors.deliveryDistrict ? 'border-red-400 bg-red-50' : ''}`}
+                  required
+                  value={form.deliveryState}
+                  onChange={handleStateChange}
+                  className={inputCls}
                 >
-                  {DISTRICT_OPTIONS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
+                  <option value="">-- Select State / UT --</option>
+                  {INDIAN_STATES_AND_UTS.map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
                   ))}
                 </select>
+              </FieldGroup>
+
+              <FieldGroup label="Delivery District *" required>
+                <select
+                  value={form.deliveryDistrict}
+                  onChange={handleDistrictChange}
+                  disabled={!form.deliveryState || availableDistricts.length === 0}
+                  className={`${inputCls} ${errors.deliveryDistrict ? 'border-red-400 bg-red-50' : ''}`}
+                >
+                  <option value="">
+                    {!form.deliveryState
+                      ? '-- Select State First --'
+                      : availableDistricts.length === 0
+                      ? '-- No districts available --'
+                      : '-- Select District --'}
+                  </option>
+                  {availableDistricts.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                  {form.deliveryDistrict && !availableDistricts.includes(form.deliveryDistrict) && (
+                    <option key={form.deliveryDistrict} value={form.deliveryDistrict}>
+                      {form.deliveryDistrict} (Current)
+                    </option>
+                  )}
+                </select>
                 {errors.deliveryDistrict && <p className="text-xs text-red-600 mt-1">{errors.deliveryDistrict}</p>}
+              </FieldGroup>
+
+              <FieldGroup label={subDistrictTerm ? `${subDistrictTerm} / Sub-district` : 'Sub-district'}>
+                <select
+                  value={form.taluka}
+                  onChange={(e) => set('taluka', e.target.value)}
+                  disabled={!form.deliveryDistrict || availableSubDistricts.length === 0}
+                  className={inputCls}
+                >
+                  <option value="">
+                    {!form.deliveryDistrict
+                      ? '-- Select District First --'
+                      : availableSubDistricts.length === 0
+                      ? `-- No ${subDistrictTerm.toLowerCase()}s available --`
+                      : `-- Select ${subDistrictTerm} --`}
+                  </option>
+                  {availableSubDistricts.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                  {form.taluka && !availableSubDistricts.includes(form.taluka) && (
+                    <option key={form.taluka} value={form.taluka}>
+                      {form.taluka} (Current)
+                    </option>
+                  )}
+                </select>
               </FieldGroup>
             </div>
 
