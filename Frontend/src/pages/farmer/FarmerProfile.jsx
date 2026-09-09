@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import farmerApi from '../../api/farmerApi.js';
 import {
-  INDIAN_STATES,
+  INDIAN_STATES_AND_UTS,
   getDistrictsForState,
-  getTalukasForDistrict,
+  getSubDistrictsForDistrict,
+  getSubDistrictTermForState,
   normalizeDistrict,
 } from './locations.js';
 
@@ -57,13 +58,14 @@ export const FarmerProfile = () => {
         if (isMounted) {
           const p = res?.data?.profile;
           if (p) {
+            const rawState = p.location?.state || 'Maharashtra';
             const rawDistrict = p.location?.district || '';
-            const normalizedDistrict = normalizeDistrict(rawDistrict);
+            const normalizedDistrict = normalizeDistrict(rawState, rawDistrict);
 
             setFormData({
               fullName: p.fullName || user?.name || '',
               phone: p.phone || user?.phone || '',
-              state: p.location?.state || 'Maharashtra',
+              state: rawState,
               district: normalizedDistrict,
               taluka: p.location?.taluka || '',
               village: p.location?.village || '',
@@ -115,7 +117,8 @@ export const FarmerProfile = () => {
   };
 
   const availableDistricts = getDistrictsForState(formData.state);
-  const availableTalukas = getTalukasForDistrict(formData.state, formData.district);
+  const availableSubDistricts = getSubDistrictsForDistrict(formData.state, formData.district);
+  const subDistrictTerm = getSubDistrictTermForState(formData.state);
 
   const handleStateChange = (e) => {
     const newState = e.target.value;
@@ -129,19 +132,19 @@ export const FarmerProfile = () => {
 
   const handleDistrictChange = (e) => {
     const newDistrict = e.target.value;
-    const talukas = getTalukasForDistrict(formData.state, newDistrict);
+    const subs = getSubDistrictsForDistrict(formData.state, newDistrict);
     setFormData((prev) => ({
       ...prev,
       district: newDistrict,
-      taluka: talukas.includes(prev.taluka) ? prev.taluka : '',
+      taluka: subs.includes(prev.taluka) ? prev.taluka : '',
     }));
   };
 
-  const handleTalukaChange = (e) => {
-    const newTaluka = e.target.value;
+  const handleSubDistrictChange = (e) => {
+    const newSubDistrict = e.target.value;
     setFormData((prev) => ({
       ...prev,
-      taluka: newTaluka,
+      taluka: newSubDistrict,
     }));
   };
 
@@ -314,14 +317,16 @@ export const FarmerProfile = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">State</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">State / Union Territory *</label>
                   <div className="relative">
                     <select
+                      required
                       value={formData.state}
                       onChange={handleStateChange}
                       className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer"
                     >
-                      {INDIAN_STATES.map((st) => (
+                      <option value="">-- Select State / UT --</option>
+                      {INDIAN_STATES_AND_UTS.map((st) => (
                         <option key={st} value={st}>
                           {st}
                         </option>
@@ -342,17 +347,26 @@ export const FarmerProfile = () => {
                       required
                       value={formData.district}
                       onChange={handleDistrictChange}
-                      disabled={availableDistricts.length === 0}
+                      disabled={!formData.state || availableDistricts.length === 0}
                       className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
                     >
                       <option value="">
-                        {availableDistricts.length === 0 ? '-- No districts available --' : '-- Select District --'}
+                        {!formData.state
+                          ? '-- Select State First --'
+                          : availableDistricts.length === 0
+                          ? '-- No districts available --'
+                          : '-- Select District --'}
                       </option>
                       {availableDistricts.map((d) => (
                         <option key={d} value={d}>
                           {d}
                         </option>
                       ))}
+                      {formData.district && !availableDistricts.includes(formData.district) && (
+                        <option key={formData.district} value={formData.district}>
+                          {formData.district}
+                        </option>
+                      )}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,26 +377,33 @@ export const FarmerProfile = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">Taluka / Tehsil</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    {subDistrictTerm ? `${subDistrictTerm} / Sub-district` : 'Taluka / Tehsil'}
+                  </label>
                   <div className="relative">
                     <select
                       value={formData.taluka}
-                      onChange={handleTalukaChange}
-                      disabled={!formData.district || availableTalukas.length === 0}
+                      onChange={handleSubDistrictChange}
+                      disabled={!formData.district || availableSubDistricts.length === 0}
                       className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
                     >
                       <option value="">
                         {!formData.district
                           ? '-- Select District First --'
-                          : availableTalukas.length === 0
-                          ? '-- No talukas available --'
-                          : '-- Select Taluka / Tehsil --'}
+                          : availableSubDistricts.length === 0
+                          ? `-- No ${subDistrictTerm.toLowerCase()}s available --`
+                          : `-- Select ${subDistrictTerm} --`}
                       </option>
-                      {availableTalukas.map((t) => (
+                      {availableSubDistricts.map((t) => (
                         <option key={t} value={t}>
                           {t}
                         </option>
                       ))}
+                      {formData.taluka && !availableSubDistricts.includes(formData.taluka) && (
+                        <option key={formData.taluka} value={formData.taluka}>
+                          {formData.taluka}
+                        </option>
+                      )}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
