@@ -1,4 +1,5 @@
 import MarketPrice from './marketPrice.model.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 const DAYS_WINDOW = 30;
 
@@ -17,8 +18,8 @@ const marketService = {
     since.setDate(since.getDate() - days);
 
     const prices = await MarketPrice.find({
-      cropName: { $regex: `^${cropName}$`, $options: 'i' },
-      district: { $regex: `^${district}$`, $options: 'i' },
+      cropName: { $regex: `^${escapeRegex(cropName)}$`, $options: 'i' },
+      district: { $regex: `^${escapeRegex(district)}$`, $options: 'i' },
       arrivalDate: { $gte: since },
     })
       .sort({ arrivalDate: -1 })
@@ -44,7 +45,7 @@ const marketService = {
     const results = await MarketPrice.aggregate([
       {
         $match: {
-          district: { $regex: `^${district}$`, $options: 'i' },
+          district: { $regex: `^${escapeRegex(district)}$`, $options: 'i' },
         },
       },
       { $sort: { arrivalDate: -1 } },
@@ -72,10 +73,13 @@ const marketService = {
    * Used for dashboard single-crop widget.
    */
   async getLatestPriceForCrop(cropName, district) {
-    const record = await MarketPrice.findOne({
-      cropName: { $regex: `^${cropName}$`, $options: 'i' },
-      district: { $regex: `^${district}$`, $options: 'i' },
-    })
+    const query = {
+      cropName: { $regex: `^${escapeRegex(cropName)}$`, $options: 'i' },
+    };
+    if (district) {
+      query.district = { $regex: `^${escapeRegex(district)}$`, $options: 'i' };
+    }
+    const record = await MarketPrice.findOne(query)
       .sort({ arrivalDate: -1 })
       .lean();
 

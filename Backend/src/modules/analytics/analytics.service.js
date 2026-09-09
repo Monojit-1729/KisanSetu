@@ -1,4 +1,5 @@
 import MarketPrice from '../markets/marketPrice.model.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 const DAYS_WINDOW = 30;
 
@@ -53,16 +54,16 @@ export const analyticsService = {
     since.setHours(0, 0, 0, 0);
 
     const query = {
-      cropName: { $regex: `^${cropName.trim()}$`, $options: 'i' },
+      cropName: { $regex: `^${escapeRegex(cropName.trim())}$`, $options: 'i' },
       arrivalDate: { $gte: since },
     };
 
     if (district) {
-      query.district = { $regex: `^${district.trim()}$`, $options: 'i' };
+      query.district = { $regex: `^${escapeRegex(district.trim())}$`, $options: 'i' };
     }
 
     if (mandiName) {
-      query.mandiName = { $regex: `^${mandiName.trim()}$`, $options: 'i' };
+      query.mandiName = { $regex: `^${escapeRegex(mandiName.trim())}$`, $options: 'i' };
     }
 
     // Sort chronologically ascending for analytical time-series
@@ -327,7 +328,7 @@ export const analyticsService = {
 
     // 1. Find all distinct districts where this crop is traded
     const districts = await MarketPrice.distinct('district', {
-      cropName: { $regex: `^${cropName.trim()}$`, $options: 'i' },
+      cropName: { $regex: `^${escapeRegex(cropName.trim())}$`, $options: 'i' },
     });
 
     if (!districts || districts.length === 0) {
@@ -348,7 +349,7 @@ export const analyticsService = {
     const comparisons = [];
     for (const dist of districts) {
       const latest = await MarketPrice.findOne({
-        cropName: { $regex: `^${cropName.trim()}$`, $options: 'i' },
+        cropName: { $regex: `^${escapeRegex(cropName.trim())}$`, $options: 'i' },
         district: dist,
       })
         .sort({ arrivalDate: -1 })
@@ -358,7 +359,7 @@ export const analyticsService = {
 
       // Prior record ~7 days ago for trend
       const prior = await MarketPrice.findOne({
-        cropName: { $regex: `^${cropName.trim()}$`, $options: 'i' },
+        cropName: { $regex: `^${escapeRegex(cropName.trim())}$`, $options: 'i' },
         district: dist,
         arrivalDate: { $lte: sevenDaysAgo },
       })

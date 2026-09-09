@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth.js';
 import Home from '../pages/Home.jsx';
@@ -5,33 +6,45 @@ import Login from '../pages/auth/Login.jsx';
 import Register from '../pages/auth/Register.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import RoleRoute from './RoleRoute.jsx';
-import FarmerDashboard from '../pages/farmer/FarmerDashboard.jsx';
-import FarmerProfile from '../pages/farmer/FarmerProfile.jsx';
-import FpoDashboard from '../pages/fpo/FpoDashboard.jsx';
-import FpoProfile from '../pages/fpo/FpoProfile.jsx';
-import BuyerDashboard from '../pages/buyer/BuyerDashboard.jsx';
-import BuyerProfile from '../pages/buyer/BuyerProfile.jsx';
-import AdminDashboard from '../pages/admin/AdminDashboard.jsx';
-import LotList from '../pages/marketplace/LotList.jsx';
-import LotDetail from '../pages/marketplace/LotDetail.jsx';
-import CreateLot from '../pages/marketplace/CreateLot.jsx';
-import MyLots from '../pages/marketplace/MyLots.jsx';
-import MarketIntelligence from '../pages/marketplace/MarketIntelligence.jsx';
-import MarketAnalytics from '../pages/marketplace/MarketAnalytics.jsx';
-import FarmerMarketIntelligence from '../pages/farmer/MarketIntelligence.jsx';
-import Recommendations from '../pages/farmer/Recommendations.jsx';
-import PostDemand from '../pages/buyer/PostDemand.jsx';
-import MyDemands from '../pages/buyer/MyDemands.jsx';
-import MatchedSupply from '../pages/buyer/MatchedSupply.jsx';
-import BrowseLots from '../pages/buyer/BrowseLots.jsx';
-import FarmerOffers from '../pages/farmer/Offers.jsx';
-import FpoOffers from '../pages/fpo/Offers.jsx';
-import BuyerOffers from '../pages/buyer/Offers.jsx';
-import FarmerOrders from '../pages/farmer/FarmerOrders.jsx';
-import FpoOrders from '../pages/fpo/FpoOrders.jsx';
-import BuyerOrders from '../pages/buyer/BuyerOrders.jsx';
-import OrderDetails from '../pages/orders/OrderDetails.jsx';
-import SmsDemo from '../pages/sms/SmsDemo.jsx';
+
+// Code-split heavy routes with React.lazy
+const FarmerDashboard = lazy(() => import('../pages/farmer/FarmerDashboard.jsx'));
+const FarmerProfile = lazy(() => import('../pages/farmer/FarmerProfile.jsx'));
+const FpoDashboard = lazy(() => import('../pages/fpo/FpoDashboard.jsx'));
+const FpoProfile = lazy(() => import('../pages/fpo/FpoProfile.jsx'));
+const BuyerDashboard = lazy(() => import('../pages/buyer/BuyerDashboard.jsx'));
+const BuyerProfile = lazy(() => import('../pages/buyer/BuyerProfile.jsx'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard.jsx'));
+const LotList = lazy(() => import('../pages/marketplace/LotList.jsx'));
+const LotDetail = lazy(() => import('../pages/marketplace/LotDetail.jsx'));
+const CreateLot = lazy(() => import('../pages/marketplace/CreateLot.jsx'));
+const MyLots = lazy(() => import('../pages/marketplace/MyLots.jsx'));
+const MarketIntelligence = lazy(() => import('../pages/marketplace/MarketIntelligence.jsx'));
+const MarketAnalytics = lazy(() => import('../pages/marketplace/MarketAnalytics.jsx'));
+const FarmerMarketIntelligence = lazy(() => import('../pages/farmer/MarketIntelligence.jsx'));
+const Recommendations = lazy(() => import('../pages/farmer/Recommendations.jsx'));
+const PostDemand = lazy(() => import('../pages/buyer/PostDemand.jsx'));
+const MyDemands = lazy(() => import('../pages/buyer/MyDemands.jsx'));
+const MatchedSupply = lazy(() => import('../pages/buyer/MatchedSupply.jsx'));
+const BrowseLots = lazy(() => import('../pages/buyer/BrowseLots.jsx'));
+const FarmerOffers = lazy(() => import('../pages/farmer/Offers.jsx'));
+const FpoOffers = lazy(() => import('../pages/fpo/Offers.jsx'));
+const BuyerOffers = lazy(() => import('../pages/buyer/Offers.jsx'));
+const FarmerOrders = lazy(() => import('../pages/farmer/FarmerOrders.jsx'));
+const FpoOrders = lazy(() => import('../pages/fpo/FpoOrders.jsx'));
+const BuyerOrders = lazy(() => import('../pages/buyer/BuyerOrders.jsx'));
+const OrderDetails = lazy(() => import('../pages/orders/OrderDetails.jsx'));
+const SmsDemo = lazy(() => import('../pages/sms/SmsDemo.jsx'));
+
+// Route loading fallback
+const RouteLoadingSpinner = () => (
+  <div className="min-h-[60vh] flex flex-col items-center justify-center bg-slate-50/50">
+    <div className="flex items-center space-x-3 bg-white px-6 py-4 rounded-xl border border-slate-200 shadow-xs">
+      <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+      <span className="text-sm font-medium text-slate-700">Loading KisanSetu...</span>
+    </div>
+  </div>
+);
 
 // Generic dashboard dispatcher based on authenticated role
 const DashboardDispatcher = () => {
@@ -44,7 +57,8 @@ const DashboardDispatcher = () => {
 
 export const AppRoutes = () => {
   return (
-    <Routes>
+    <Suspense fallback={<RouteLoadingSpinner />}>
+      <Routes>
       {/* Public Pages */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -325,6 +339,7 @@ export const AppRoutes = () => {
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 };
 

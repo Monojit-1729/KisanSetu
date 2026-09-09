@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { isDbConnected } from './config/db.js';
 import { authRoutes } from './modules/auth/index.js';
 import { farmerRoutes } from './modules/farmers/index.js';
 import { fpoRoutes } from './modules/fpos/index.js';
@@ -49,12 +50,14 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Foundation Health Check Endpoint
+// Truthful Health & Readiness Endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'ok',
+  const dbReady = isDbConnected();
+  const statusCode = dbReady ? 200 : 503;
+  res.status(statusCode).json({
+    status: dbReady ? 'ok' : 'unhealthy',
     service: 'KisanSetu API',
-    message: 'KisanSetu backend architecture foundation initialized',
+    database: dbReady ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString()
   });
 });
@@ -108,6 +111,14 @@ app.use((err, req, res, next) => {
   if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
     statusCode = 401;
     message = 'Invalid or expired session token';
+  }
+
+  // Hide internal server errors in production
+  if (statusCode === 500) {
+    console.error('[KisanSetu Server Error]', err);
+    if (process.env.NODE_ENV === 'production') {
+      message = 'An unexpected server error occurred. Please try again later.';
+    }
   }
 
   res.status(statusCode).json({

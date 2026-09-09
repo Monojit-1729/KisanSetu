@@ -5,6 +5,7 @@ import { BuyerProfile } from '../buyers/index.js';
 import { matchingService } from '../matching/index.js';
 import { realizationService } from '../realization/index.js';
 import scoringService from './scoring.service.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 const recommendationService = {
   /**
@@ -55,7 +56,7 @@ const recommendationService = {
     if (!marketBenchmark) {
       // Try state-level recent price if district has no entries
       const recentStatewide = await MarketPrice.findOne({
-        cropName: { $regex: `^${lot.cropName}$`, $options: 'i' },
+        cropName: { $regex: `^${escapeRegex(lot.cropName)}$`, $options: 'i' },
       })
         .sort({ arrivalDate: -1 })
         .lean();

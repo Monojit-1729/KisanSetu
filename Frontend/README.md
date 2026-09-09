@@ -1,16 +1,42 @@
-# React + Vite
+# KisanSetu Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Client web application for the KisanSetu direct farm-to-buyer marketplace and decision intelligence platform. Built with React, Vite, TailwindCSS, and React Router.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Role-Based Portals**: Tailored interfaces and navigation for Farmers, FPOs, Buyers, and Admins.
+- **Dynamic Marketplace**: Browse listings, create lots, search with filters, and view real-time intelligence.
+- **Automated Matching Engine**: Match buyer demand with farmer lots based on distance, quantity, and grade.
+- **Negotiations & Counter-Offers**: Interactive offer flows with automated net realization calculation.
+- **SMS Simulation Console**: Two-way interactive SMS simulation for offline farmer communication workflows.
+- **Optimized Performance**: Route-level code splitting using `React.lazy` and `Suspense` for minimal initial page loads.
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the Oxlint configuration
+# Start local Vite development server
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+# Build production bundle with code-splitting
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+## Environment Configuration
+
+Create a `.env` file in this directory with the following variables:
+
+```ini
+VITE_API_URL=http://localhost:5000/api
+```
+
+For production deployment on Vercel:
+- **Root Directory**: `Frontend`
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Environment Variable**: `VITE_API_URL=https://kisansetu-backend-xvcw.onrender.com/api`

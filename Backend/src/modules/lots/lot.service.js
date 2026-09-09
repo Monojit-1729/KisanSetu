@@ -1,4 +1,5 @@
 import Lot from './lot.model.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -42,6 +43,7 @@ const lotService = {
   async getMyLots(userId) {
     const lots = await Lot.find({ owner: userId })
       .sort({ createdAt: -1 })
+      .limit(100)
       .lean();
     return lots.map((l) => {
       const obj = new Lot(l).toJSON();
@@ -77,8 +79,8 @@ const lotService = {
    */
   async listActiveLots({ cropName, district, quality, page = 1, limit = DEFAULT_PAGE_SIZE } = {}) {
     const query = { status: 'active' };
-    if (cropName) query.cropName = { $regex: cropName, $options: 'i' };
-    if (district) query['location.district'] = { $regex: district, $options: 'i' };
+    if (cropName) query.cropName = { $regex: escapeRegex(cropName), $options: 'i' };
+    if (district) query['location.district'] = { $regex: escapeRegex(district), $options: 'i' };
     if (quality) query.quality = quality;
 
     const skip = (Math.max(1, page) - 1) * limit;

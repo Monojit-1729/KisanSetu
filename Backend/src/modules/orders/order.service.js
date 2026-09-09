@@ -140,6 +140,7 @@ export const orderService = {
       .populate('logistics')
       .populate('payment')
       .sort({ createdAt: -1 })
+      .limit(100)
       .lean();
 
     return orders.map((o) => ({

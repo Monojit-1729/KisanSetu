@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Demand } from '../demand/index.js';
 import { Lot } from '../lots/index.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 // Unit conversion to quintals for uniform comparison
 const toQuintals = (qty, unit) => {
@@ -89,7 +90,7 @@ const matchingService = {
     if (!demand) return null;
 
     // Search active lots matching cropName (case-insensitive)
-    const cropRegex = new RegExp(`^${demand.cropName.trim()}$`, 'i');
+    const cropRegex = new RegExp(`^${escapeRegex(demand.cropName.trim())}$`, 'i');
     const activeLots = await Lot.find({
       status: 'active',
       cropName: cropRegex,
@@ -187,7 +188,7 @@ const matchingService = {
     const lot = await Lot.findOne(query).populate('owner', 'name email role').lean();
     if (!lot) return null;
 
-    const cropRegex = new RegExp(`^${lot.cropName.trim()}$`, 'i');
+    const cropRegex = new RegExp(`^${escapeRegex(lot.cropName.trim())}$`, 'i');
     const activeDemands = await Demand.find({
       status: 'active',
       cropName: cropRegex,
@@ -272,7 +273,7 @@ const matchingService = {
 
     let totalMatches = 0;
     const lotSummaries = activeLots.map((lot) => {
-      const cropRegex = new RegExp(`^${lot.cropName.trim()}$`, 'i');
+      const cropRegex = new RegExp(`^${escapeRegex(lot.cropName.trim())}$`, 'i');
       const lotQtyQ = toQuintals(lot.quantity, lot.unit);
 
       const matchingDemands = activeDemands.filter((demand) => {

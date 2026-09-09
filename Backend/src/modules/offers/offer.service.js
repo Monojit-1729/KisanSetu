@@ -319,6 +319,7 @@ export const offerService = {
       .populate('seller', 'name email role')
       .populate('lot', 'cropName variety quality location pricePerQuintal quantity unit status')
       .sort({ updatedAt: -1 })
+      .limit(100)
       .lean();
 
     return offers.map((o) => ({
@@ -354,6 +355,7 @@ export const offerService = {
     const offers = await Offer.find({ lot: lotId })
       .populate('buyer', 'name email role')
       .sort({ updatedAt: -1 })
+      .limit(100)
       .lean();
 
     return offers.map((o) => ({

@@ -2,12 +2,13 @@ import { Router } from 'express';
 import authController from './auth.controller.js';
 import { authenticate } from '../../middleware/auth.middleware.js';
 import { requireRole } from '../../middleware/role.middleware.js';
+import { authLimiter } from '../../middleware/rateLimiter.js';
 
 const router = Router();
 
-// Public authentication routes
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+// Public authentication routes (rate-limited against brute-force)
+router.post('/register', authLimiter, authController.register);
+router.post('/login', authLimiter, authController.login);
 router.post('/logout', authController.logout);
 
 // Protected user profile route

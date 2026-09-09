@@ -5,6 +5,7 @@ import { Demand } from '../demand/index.js';
 import { realizationService } from '../realization/index.js';
 import parseSmsMessage from './sms.parser.js';
 import SmsLog from './sms.model.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 // In-memory active session cache for quick keypad follow-up BUY commands
 // Phone digits -> { crop, quantity, unit, options: { A: {...}, B: {...} }, expiresAt }
@@ -160,7 +161,7 @@ export const smsService = {
     let marketBenchmark = await marketService.getLatestPriceForCrop(crop, district);
     if (!marketBenchmark) {
       marketBenchmark = await MarketPrice.findOne({
-        cropName: { $regex: new RegExp(`^${crop}$`, 'i') },
+        cropName: { $regex: new RegExp(`^${escapeRegex(crop)}$`, 'i') },
       })
         .sort({ arrivalDate: -1 })
         .lean();
@@ -188,7 +189,7 @@ export const smsService = {
 
     // 3. Match Available Direct Buyers for this Crop
     const matchingDemands = await Demand.find({
-      cropName: { $regex: new RegExp(`^${crop}$`, 'i') },
+      cropName: { $regex: new RegExp(`^${escapeRegex(crop)}$`, 'i') },
       status: 'active',
     })
       .populate('buyer', 'name email businessName')

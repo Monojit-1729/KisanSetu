@@ -12,15 +12,34 @@ if (!process.env.MONGODB_URI) {
   dotenv.config();
 }
 
+export const isDbConnected = () => mongoose.connection.readyState === 1;
+
+export const disconnectDB = async () => {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.close(false);
+  }
+};
+
 const connectDB = async () => {
+  const isProd = process.env.NODE_ENV === 'production';
+  const mongoURI = process.env.MONGODB_URI || (isProd ? null : 'mongodb://localhost:27017/kisansetu');
+
+  if (!mongoURI) {
+    const err = new Error('[KisanSetu Database] MONGODB_URI environment variable is not defined.');
+    console.error(err.message);
+    throw err;
+  }
+
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/kisansetu';
     const conn = await mongoose.connect(mongoURI);
     console.log(`[KisanSetu Database] MongoDB Connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
     console.error(`[KisanSetu Database] Connection error: ${error.message}`);
-    // Do not crash the entire process if DB is temporarily unavailable
+    if (isProd) {
+      // In production, fail-fast so unhealthy instances are not marked as ready
+      throw error;
+    }
     return null;
   }
 };

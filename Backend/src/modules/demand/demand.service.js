@@ -1,4 +1,5 @@
 import Demand from './demand.model.js';
+import { escapeRegex } from '../../utils/regex.js';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -85,8 +86,8 @@ const demandService = {
   async listDemands({ cropName, district, status = 'active', page = 1, limit = DEFAULT_PAGE_SIZE } = {}) {
     const query = {};
     if (status) query.status = status;
-    if (cropName) query.cropName = new RegExp(`^${cropName.trim()}$`, 'i');
-    if (district) query['deliveryLocation.district'] = new RegExp(`^${district.trim()}$`, 'i');
+    if (cropName) query.cropName = new RegExp(`^${escapeRegex(cropName.trim())}$`, 'i');
+    if (district) query['deliveryLocation.district'] = new RegExp(`^${escapeRegex(district.trim())}$`, 'i');
 
     const pageNum = Math.max(1, Number(page) || 1);
     const limitNum = Math.max(1, Math.min(100, Number(limit) || DEFAULT_PAGE_SIZE));
