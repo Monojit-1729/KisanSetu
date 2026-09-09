@@ -18,6 +18,7 @@ export const Recommendations = () => {
   const [recommendationData, setRecommendationData] = useState(null);
   const [loadingRecommendation, setLoadingRecommendation] = useState(false);
   const [error, setError] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 1. Fetch user's active lots
   useEffect(() => {
@@ -93,23 +94,22 @@ export const Recommendations = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Navigation Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link to="/farmer/dashboard" className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
-                KS
-              </div>
-              <div>
-                <span className="font-bold text-slate-900 text-lg leading-tight block">KisanSetu</span>
-                <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">
-                  Recommendation Engine
-                </span>
-              </div>
-            </Link>
-          </div>
+          <Link to={user?.role === 'fpo' ? '/fpo/dashboard' : '/farmer/dashboard'} className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-base sm:text-lg shadow-xs shrink-0">
+              KS
+            </div>
+            <div>
+              <span className="font-bold text-slate-900 text-base sm:text-lg leading-tight block">KisanSetu</span>
+              <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider block">
+                Recommendations
+              </span>
+            </div>
+          </Link>
 
-          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 shrink-0">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-2 sm:space-x-3 shrink-0">
             <Link
               to={user?.role === 'fpo' ? '/fpo/dashboard' : '/farmer/dashboard'}
               className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
@@ -143,7 +143,78 @@ export const Recommendations = () => {
               Sign Out
             </button>
           </nav>
+
+          {/* Mobile Controls */}
+          <div className="flex md:hidden items-center space-x-2">
+            <Link
+              to={user?.role === 'fpo' ? '/fpo/dashboard' : '/farmer/dashboard'}
+              className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg shrink-0"
+            >
+              Dashboard
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1.5 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none"
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Slide-down Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1 shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
+            <Link
+              to={user?.role === 'fpo' ? '/fpo/dashboard' : '/farmer/dashboard'}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              ← Dashboard
+            </Link>
+            {selectedLotId && (
+              <Link
+                to={`/farmer/market-intelligence?lotId=${selectedLotId}`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+              >
+                Market Comparison
+              </Link>
+            )}
+            <Link
+              to="/farmer/offers"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              Offers
+            </Link>
+            <Link
+              to="/marketplace/my-lots"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              My Lots
+            </Link>
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                onClick={() => { setMobileMenuOpen(false); logout(); }}
+                className="w-full text-center text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
@@ -178,7 +249,7 @@ export const Recommendations = () => {
                   id="rec-lot-select"
                   value={selectedLotId}
                   onChange={handleSelectLot}
-                  className="text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-emerald-500"
+                  className="text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-emerald-500 w-full sm:w-auto max-w-full truncate"
                 >
                   {activeLots.map((lot) => (
                     <option key={lot.id || lot._id} value={lot.id || lot._id}>

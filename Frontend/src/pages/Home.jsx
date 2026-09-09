@@ -8,22 +8,19 @@ export const Home = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+          <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-base sm:text-lg shadow-xs shrink-0">
               KS
             </div>
-            <div>
-              <span className="font-bold text-slate-900 text-lg leading-tight block">KisanSetu</span>
-              <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">SIH Problem Statement 26132</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-3">
+            <span className="font-bold text-slate-900 text-lg leading-tight block">KisanSetu</span>
+          </Link>
+          <div className="flex items-center space-x-1.5 sm:space-x-3">
             {isAuthenticated ? (
               <Link
                 to={`/${user?.role}/dashboard`}
-                className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors shadow-xs"
+                className="px-3 sm:px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors shadow-xs"
               >
-                Go to {user?.role?.toUpperCase()} Dashboard →
+                Dashboard →
               </Link>
             ) : (
               <>

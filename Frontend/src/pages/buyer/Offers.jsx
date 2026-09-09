@@ -19,6 +19,7 @@ export const BuyerOffers = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [successBanner, setSuccessBanner] = useState('');
   const [createdOrder, setCreatedOrder] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const fetchOffers = async () => {
     setLoading(true);
@@ -78,11 +79,11 @@ export const BuyerOffers = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link to="/buyer/dashboard" className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-amber-600 text-white font-bold flex items-center justify-center text-lg shadow-xs shrink-0">
                 KS
               </div>
               <div>
@@ -94,7 +95,8 @@ export const BuyerOffers = () => {
             </Link>
           </div>
 
-          <nav className="flex items-center space-x-3">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-3">
             <Link
               to="/buyer/dashboard"
               className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
@@ -120,7 +122,62 @@ export const BuyerOffers = () => {
               Sign Out
             </button>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Menu"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-hidden"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1 shadow-lg">
+            <Link
+              to="/buyer/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/buyer/orders"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              My Orders
+            </Link>
+            <Link
+              to="/buyer/supply"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Browse Supply
+            </Link>
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full text-left block px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Container */}

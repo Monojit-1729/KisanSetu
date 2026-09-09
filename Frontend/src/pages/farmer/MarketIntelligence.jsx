@@ -19,6 +19,7 @@ export const MarketIntelligence = () => {
   const [intelligenceData, setIntelligenceData] = useState(null);
   const [loadingIntelligence, setLoadingIntelligence] = useState(false);
   const [error, setError] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Sorting & Filtering
   const [sortBy, setSortBy] = useState('netReturn'); // 'netReturn', 'score', 'distance', 'grossPrice'
@@ -129,11 +130,11 @@ export const MarketIntelligence = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Top Navigation */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Link to="/farmer/dashboard" className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-xs shrink-0">
                 KS
               </div>
               <div>
@@ -145,35 +146,101 @@ export const MarketIntelligence = () => {
             </Link>
           </div>
 
-          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 shrink-0">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-2 sm:space-x-3">
             <Link
               to={user?.role === 'fpo' ? '/fpo/dashboard' : '/farmer/dashboard'}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
             >
               ← Back to Dashboard
             </Link>
             <Link
               to="/marketplace/my-lots"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
             >
               My Lots
             </Link>
             {selectedLotId && (
               <Link
                 to={`/farmer/recommendations?lotId=${selectedLotId}`}
-                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-lg shadow-xs transition-colors shrink-0"
+                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-lg shadow-xs transition-colors"
               >
                 Top Recommendation →
               </Link>
             )}
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
             >
               Sign Out
             </button>
           </nav>
+
+          {/* Mobile Actions */}
+          <div className="flex items-center space-x-2 md:hidden">
+            {selectedLotId && (
+              <Link
+                to={`/farmer/recommendations?lotId=${selectedLotId}`}
+                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 rounded-lg shadow-xs"
+              >
+                Top Rec →
+              </Link>
+            )}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Menu"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-hidden"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1 shadow-lg">
+            <Link
+              to={user?.role === 'fpo' ? '/fpo/dashboard' : '/farmer/dashboard'}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              ← Back to Dashboard
+            </Link>
+            <Link
+              to="/marketplace/my-lots"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              My Lots
+            </Link>
+            {selectedLotId && (
+              <Link
+                to={`/farmer/recommendations?lotId=${selectedLotId}`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-sm font-medium text-emerald-700 hover:bg-emerald-50"
+              >
+                Top Recommendation →
+              </Link>
+            )}
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full text-left block px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Container */}
@@ -213,7 +280,7 @@ export const MarketIntelligence = () => {
                   id="lot-select"
                   value={selectedLotId}
                   onChange={handleSelectLot}
-                  className="text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-emerald-500"
+                  className="text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg px-3 py-2 outline-none focus:border-emerald-500 w-full sm:w-auto max-w-full truncate"
                 >
                   {activeLots.map((lot) => (
                     <option key={lot.id || lot._id} value={lot.id || lot._id}>

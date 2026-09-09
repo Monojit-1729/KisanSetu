@@ -18,7 +18,7 @@ const apiClient = axios.create({
 // Attach JWT token to outgoing requests if available
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('kisansetu_token');
+    const token = sessionStorage.getItem('kisansetu_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

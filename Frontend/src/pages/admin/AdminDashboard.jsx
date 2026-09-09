@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import adminApi from '../../api/adminApi.js';
 
@@ -38,18 +39,23 @@ export const AdminDashboard = () => {
       {/* Header */}
       <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+          <Link to="/admin/dashboard" className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-600 text-white font-bold flex items-center justify-center text-base sm:text-lg shadow-xs shrink-0">
               KS
             </div>
             <div>
-              <span className="font-bold text-white text-lg leading-tight block">KisanSetu</span>
-              <span className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider">System Administration Console</span>
+              <span className="font-bold text-white text-base sm:text-lg leading-tight block">KisanSetu</span>
+              <span className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider block sm:hidden">
+                Admin Console
+              </span>
+              <span className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider hidden sm:block">
+                System Administration Console
+              </span>
             </div>
-          </div>
+          </Link>
 
-          <div className="flex items-center space-x-4">
-            <div className="text-right hidden sm:block">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="text-right hidden md:block">
               <div className="text-xs font-semibold text-slate-200">{user?.name}</div>
               <div className="text-[10px] text-slate-400">{user?.email}</div>
             </div>
@@ -58,7 +64,7 @@ export const AdminDashboard = () => {
             </span>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>

@@ -12,6 +12,7 @@ export const BuyerDashboard = () => {
   const [error, setError] = useState('');
   const [demandStats, setDemandStats] = useState({ activeCount: 0, totalCount: 0 });
   const [recentDemands, setRecentDemands] = useState([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -52,19 +53,20 @@ export const BuyerDashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+          <Link to="/buyer/dashboard" className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-600 text-white font-bold flex items-center justify-center text-base sm:text-lg shadow-xs shrink-0">
               KS
             </div>
             <div>
-              <span className="font-bold text-slate-900 text-lg leading-tight block">KisanSetu</span>
-              <span className="text-[10px] text-amber-700 font-semibold uppercase tracking-wider">Buyer Portal</span>
+              <span className="font-bold text-slate-900 text-base sm:text-lg leading-tight block">KisanSetu</span>
+              <span className="text-[10px] text-amber-700 font-semibold uppercase tracking-wider block">Buyer Portal</span>
             </div>
-          </div>
+          </Link>
 
-          <nav className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto py-1 max-w-[65%] sm:max-w-none shrink-0">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-2 sm:space-x-3 shrink-0">
             <Link
               to="/buyer/dashboard"
               className="text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 shrink-0"
@@ -108,7 +110,7 @@ export const BuyerDashboard = () => {
               + Post Demand
             </Link>
             <div className="h-4 w-px bg-slate-200 shrink-0"></div>
-            <div className="text-right hidden sm:block shrink-0">
+            <div className="text-right hidden lg:block shrink-0">
               <div className="text-xs font-semibold text-slate-800">{user?.name}</div>
               <div className="text-[10px] text-slate-500">{user?.email}</div>
             </div>
@@ -117,12 +119,106 @@ export const BuyerDashboard = () => {
             </span>
             <button
               onClick={logout}
-              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
             >
               Sign Out
             </button>
           </nav>
+
+          {/* Mobile Navigation Controls */}
+          <div className="flex md:hidden items-center space-x-2">
+            <Link
+              to="/buyer/demand/create"
+              className="text-[11px] font-bold text-white bg-amber-600 hover:bg-amber-700 px-2.5 py-1.5 rounded-lg shadow-xs transition-colors shrink-0"
+            >
+              + Demand
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1.5 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none"
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Slide-down Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1 shadow-lg animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="pb-2 mb-2 border-b border-slate-100 px-1">
+              <div className="text-xs font-bold text-slate-800">{user?.name || 'Buyer Account'}</div>
+              <div className="text-[11px] text-slate-500 truncate">{user?.email}</div>
+            </div>
+            <Link
+              to="/buyer/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-2.5 rounded-lg border border-amber-200"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/buyer/demands"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              My Demands
+            </Link>
+            <Link
+              to="/buyer/offers"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              Offers & Negotiations
+            </Link>
+            <Link
+              to="/buyer/orders"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              Orders
+            </Link>
+            <Link
+              to="/buyer/supply"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              Browse Supply
+            </Link>
+            <Link
+              to="/buyer/profile"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-3 py-2.5 rounded-lg"
+            >
+              Buyer Profile
+            </Link>
+            <Link
+              to="/buyer/demand/create"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-3 py-2.5 rounded-lg transition-colors shadow-xs"
+            >
+              + Post New Demand
+            </Link>
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                onClick={() => { setMobileMenuOpen(false); logout(); }}
+                className="w-full text-center text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}

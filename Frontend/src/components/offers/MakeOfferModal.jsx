@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import offersApi from '../../api/offersApi.js';
 
 export const MakeOfferModal = ({ lot, isOpen, onClose, onSuccess }) => {
-  if (!isOpen || !lot) return null;
-
-  const availableQty = lot.quantity || 0;
-  const askingPrice = lot.pricePerQuintal || 0;
+  const availableQty = lot?.quantity || 0;
+  const askingPrice = lot?.pricePerQuintal || 0;
 
   const [quantity, setQuantity] = useState(availableQty);
   const [offeredPrice, setOfferedPrice] = useState(askingPrice);
@@ -13,6 +11,8 @@ export const MakeOfferModal = ({ lot, isOpen, onClose, onSuccess }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+
+  if (!isOpen || !lot) return null;
 
   const numQty = Number(quantity) || 0;
   const numPrice = Number(offeredPrice) || 0;

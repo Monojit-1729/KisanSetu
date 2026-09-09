@@ -4,13 +4,21 @@ import authApi from '../api/authApi.js';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('kisansetu_token'));
-  const [loading, setLoading] = useState(() => Boolean(localStorage.getItem('kisansetu_token')));
+  const [token, setToken] = useState(() => sessionStorage.getItem('kisansetu_token'));
+  const [loading, setLoading] = useState(() => Boolean(sessionStorage.getItem('kisansetu_token')));
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
-    const savedToken = localStorage.getItem('kisansetu_token');
+
+    // Purge legacy localStorage token if present to guarantee tab isolation
+    try {
+      localStorage.removeItem('kisansetu_token');
+    } catch {
+      // Ignore if localStorage unavailable
+    }
+
+    const savedToken = sessionStorage.getItem('kisansetu_token');
 
     if (!savedToken) {
       return;
@@ -24,7 +32,7 @@ export function AuthProvider({ children }) {
             setUser(response.data.user);
             setToken(savedToken);
           } else {
-            localStorage.removeItem('kisansetu_token');
+            sessionStorage.removeItem('kisansetu_token');
             setUser(null);
             setToken(null);
           }
@@ -33,7 +41,7 @@ export function AuthProvider({ children }) {
       .catch((err) => {
         if (isMounted) {
           console.warn('[KisanSetu Auth] Session verification failed:', err.message);
-          localStorage.removeItem('kisansetu_token');
+          sessionStorage.removeItem('kisansetu_token');
           setUser(null);
           setToken(null);
         }
@@ -55,7 +63,7 @@ export function AuthProvider({ children }) {
       const response = await authApi.login(credentials);
       const { user: authUser, token: authToken } = response.data;
 
-      localStorage.setItem('kisansetu_token', authToken);
+      sessionStorage.setItem('kisansetu_token', authToken);
       setToken(authToken);
       setUser(authUser);
       return authUser;
@@ -71,7 +79,7 @@ export function AuthProvider({ children }) {
       const response = await authApi.register(userData);
       const { user: authUser, token: authToken } = response.data;
 
-      localStorage.setItem('kisansetu_token', authToken);
+      sessionStorage.setItem('kisansetu_token', authToken);
       setToken(authToken);
       setUser(authUser);
       return authUser;
@@ -87,7 +95,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.warn('[KisanSetu Auth] Server logout call failed, proceeding with local purge:', err.message);
     } finally {
-      localStorage.removeItem('kisansetu_token');
+      sessionStorage.removeItem('kisansetu_token');
       setToken(null);
       setUser(null);
       setError(null);

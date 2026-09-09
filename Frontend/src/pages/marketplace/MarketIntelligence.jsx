@@ -17,6 +17,7 @@ export const MarketIntelligence = () => {
   const [loadingLatest, setLoadingLatest] = useState(false);
   const [loadingTs, setLoadingTs] = useState(false);
   const [error, setError] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch metadata crops and districts list
   useEffect(() => {
@@ -74,34 +75,98 @@ export const MarketIntelligence = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">KS</div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-lg shadow-xs shrink-0">KS</div>
             <div>
               <span className="font-bold text-slate-900 text-lg leading-tight block">KisanSetu</span>
               <span className="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">Market Intelligence</span>
             </div>
           </div>
-          <nav className="flex items-center gap-2 sm:gap-3 overflow-x-auto py-1 shrink-0">
-            <Link to={`/${user?.role}/dashboard`} className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-2 sm:gap-3">
+            <Link to={`/${user?.role}/dashboard`} className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
               Dashboard
             </Link>
-            <Link to="/marketplace" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
+            <Link to="/marketplace" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
               Browse
             </Link>
-            <Link to="/marketplace/intelligence" className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 shrink-0">
+            <Link to="/marketplace/intelligence" className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
               Price Intel
             </Link>
-            <Link to="/marketplace/analytics" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
+            <Link to="/marketplace/analytics" className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
               Analytics & Forecast
             </Link>
-            <div className="h-4 w-px bg-slate-200 shrink-0" />
-            <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0">
+            <div className="h-4 w-px bg-slate-200" />
+            <button onClick={logout} className="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
               Sign Out
             </button>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Menu"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-hidden"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1 shadow-lg">
+            <Link
+              to={`/${user?.role}/dashboard`}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/marketplace"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Browse
+            </Link>
+            <Link
+              to="/marketplace/intelligence"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-emerald-700 bg-emerald-50"
+            >
+              Price Intel
+            </Link>
+            <Link
+              to="/marketplace/analytics"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Analytics & Forecast
+            </Link>
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full text-left block px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -120,22 +185,22 @@ export const MarketIntelligence = () => {
 
         {/* Filters row */}
         <div className="flex flex-wrap gap-3 mb-6">
-          <div>
+          <div className="w-full sm:w-auto">
             <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">District</label>
             <select
               value={selectedDistrict}
               onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedCrop(''); }}
-              className="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-w-[160px]"
+              className="w-full sm:w-auto text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-w-0 sm:min-w-[160px]"
             >
               {availableDistricts.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
-          <div>
+          <div className="w-full sm:w-auto">
             <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">Drill-down Crop</label>
             <select
               value={selectedCrop}
               onChange={(e) => setSelectedCrop(e.target.value)}
-              className="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-w-[160px]"
+              className="w-full sm:w-auto text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 min-w-0 sm:min-w-[160px]"
             >
               <option value="">— Select crop for trend —</option>
               {availableCrops.map((c) => <option key={c} value={c}>{c}</option>)}
