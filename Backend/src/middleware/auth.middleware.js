@@ -26,7 +26,7 @@ export const authenticate = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'User account no longer exists.',
+        error: 'User not found.',
       });
     }
 
