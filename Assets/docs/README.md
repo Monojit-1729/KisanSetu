@@ -20,47 +20,19 @@ The platform is organized as a full-stack workspace with clean separation betwee
 
 ```
 KisanSetu/
-├── Assets/                                            # Master specifications & project assets
-│   └── KisanSetu_SIH26132_Final_Consolidated_Project_Documentation.docx
-├── Frontend/                                          # Frontend application (React + Vite + Tailwind CSS)
-│   ├── public/
-│   └── src/
-│       ├── api/                                       # API client bindings
-│       ├── assets/                                    # UI assets (images, icons, illustrations)
-│       │   ├── images/
-│       │   ├── icons/
-│       │   └── illustrations/
-│       ├── components/                                # Reusable UI components
-│       │   ├── common/
-│       │   ├── layout/
-│       │   ├── farmer/
-│       │   ├── fpo/
-│       │   ├── buyer/
-│       │   ├── marketplace/
-│       │   ├── recommendations/
-│       │   ├── orders/
-│       │   ├── logistics/
-│       │   ├── sms/
-│       │   └── charts/
-│       ├── layouts/                                   # Role-based shell layouts
-│       ├── pages/                                     # View pages
-│       │   ├── auth/
-│       │   ├── farmer/
-│       │   ├── fpo/
-│       │   ├── buyer/
-│       │   ├── marketplace/
-│       │   ├── orders/
-│       │   ├── admin/
-│       │   └── sms/
-│       ├── routes/                                    # Frontend routing definitions
-│       ├── services/                                  # Frontend service modules
-│       ├── hooks/                                     # Custom React hooks
-│       ├── context/                                   # Global client state (Auth, Notification)
-│       ├── utils/                                     # UI formatters and helpers
-│       ├── data/                                      # Static datasets and mocks
-│       ├── App.jsx                                    # Root component
-│       ├── main.jsx                                   # Vite DOM entry
-│       └── index.css                                  # Tailwind CSS tokens
+├── Assets/                                            # Project-level supporting material, orchestration & tooling
+│   ├── docs/                                          # Architecture notes, consolidated documentation & guides
+│   │   ├── architecture/
+│   │   ├── product/
+│   │   ├── KisanSetu_SIH26132_Final_Consolidated_Project_Documentation.docx
+│   │   └── README.md                                  # Centralized project documentation
+│   ├── research/                                      # Domain research, references & pilot data
+│   ├── presentations/                                 # PPTs & presentation assets
+│   ├── scripts/                                       # Development helpers & non-runtime scripts
+│   ├── config/                                        # Shared project-level configurations
+│   ├── .gitignore                                     # Assets-level ignore rules
+│   ├── package.json                                   # Centralized path-based npm orchestration
+│   └── package-lock.json
 ├── Backend/                                           # Backend REST API (Node.js + Express + Mongoose)
 │   ├── src/
 │   │   ├── config/                                    # Database & environment configurations
@@ -95,19 +67,57 @@ KisanSetu/
 │   │   ├── utils/                                     # Math, formatting, logger
 │   │   ├── app.js                                     # Express application setup
 │   │   └── server.js                                  # HTTP listener & process lifecycle
-│   └── package.json
-├── docs/                                              # Project research, architecture & presentations
-│   ├── research/
-│   ├── architecture/
-│   ├── product/
-│   └── presentations/
-├── scripts/                                           # Utility and automation scripts
-├── .env                                               # Local environment variables (git-ignored)
-├── .env.example                                       # Template environment variables
-├── .gitignore                                         # Version control ignore rules
-├── package.json                                       # Root workspace manager & concurrent scripts
-├── package-lock.json                                  # Workspace dependency tree lockfile
-└── README.md
+│   ├── .env                                           # Local environment variables (git-ignored)
+│   ├── .env.example                                   # Template environment variables
+│   ├── .gitignore                                     # Backend ignore rules
+│   ├── render.yaml                                    # Render deployment blueprint
+│   ├── package.json                                   # Backend dependencies & lifecycle scripts
+│   └── package-lock.json
+└── Frontend/                                          # Modern Single Page Application (React 19 + Vite 8 + Tailwind CSS 4)
+    ├── public/
+    ├── src/
+    │   ├── api/                                       # API client bindings
+    │   ├── assets/                                    # UI assets (images, icons, illustrations)
+    │   │   ├── images/
+    │   │   ├── icons/
+    │   │   └── illustrations/
+    │   ├── components/                                # Reusable UI components
+    │   │   ├── common/
+    │   │   ├── layout/
+    │   │   ├── farmer/
+    │   │   ├── fpo/
+    │   │   ├── buyer/
+    │   │   ├── marketplace/
+    │   │   ├── recommendations/
+    │   │   ├── orders/
+    │   │   ├── logistics/
+    │   │   ├── sms/
+    │   │   └── charts/
+    │   ├── layouts/                                   # Role-based shell layouts
+    │   ├── pages/                                     # View pages
+    │   │   ├── auth/
+    │   │   ├── farmer/
+    │   │   ├── fpo/
+    │   │   ├── buyer/
+    │   │   ├── marketplace/
+    │   │   ├── orders/
+    │   │   ├── admin/
+    │   │   └── sms/
+    │   ├── routes/                                    # Frontend routing definitions
+    │   ├── services/                                  # Frontend service modules
+    │   ├── hooks/                                     # Custom React hooks
+    │   ├── context/                                   # Global client state (Auth, Notification)
+    │   ├── utils/                                     # UI formatters and helpers
+    │   ├── data/                                      # Static datasets and mocks
+    │   ├── App.jsx                                    # Root component
+    │   ├── main.jsx                                   # Vite DOM entry
+    │   └── index.css                                  # Tailwind CSS tokens
+    ├── .env.example                                   # Template environment variables
+    ├── .gitignore                                     # Frontend ignore rules
+    ├── vercel.json                                    # Vercel deployment rewrites
+    ├── vite.config.js                                 # Vite configuration & dev proxy
+    ├── package.json
+    └── package-lock.json
 ```
 
 ---
@@ -132,38 +142,45 @@ KisanSetu/
 - **Node.js**: `v20.x` or later (tested on Node `v24.x`)
 - **npm**: `v10.x` or later
 
-### Installation
+### Installation & Setup
 
-Clone the repository and install all dependencies from the root:
+Clone the repository and install all dependencies across Backend, Frontend, and Assets tooling:
 
 ```bash
-# Install root, Frontend, and Backend dependencies in one command
-npm install
+# Install dependencies across Backend, Frontend, and Assets orchestration tooling
+npm --prefix Assets run install:all
 ```
 
-Configure your environment variables:
+Configure your local backend environment variables:
 
 ```bash
-# Copy template to .env
-cp .env.example .env
+# Copy backend template to local .env
+cp Backend/.env.example Backend/.env
 ```
 
 ---
 
 ## 💻 Available Scripts
 
-Run scripts from the repository root:
+Run orchestration scripts via Assets:
 
 | Command | Action |
 | :--- | :--- |
-| `npm run dev` | Runs **both** Express backend (`localhost:5000`) and Vite frontend (`localhost:5173`) concurrently |
-| `npm run dev:frontend` | Starts Vite frontend dev server (`http://localhost:5173`) |
-| `npm run dev:backend` | Starts Express backend server with nodemon auto-restart (`http://localhost:5000`) |
-| `npm run dev:client` | Alias for `npm run dev:frontend` (preserved backward compatibility) |
-| `npm run dev:server` | Alias for `npm run dev:backend` (preserved backward compatibility) |
-| `npm run build` | Builds the frontend production bundle into `Frontend/dist/` |
-| `npm run start` | Starts the production server using Node.js |
-| `npm run install:all` | Runs `npm install` across root and workspaces |
+| `npm --prefix Assets run dev` | Runs **both** Express backend (`localhost:5000`) and Vite frontend (`localhost:5173`) concurrently |
+| `npm --prefix Assets run dev:frontend` | Starts Vite frontend dev server (`http://localhost:5173`) |
+| `npm --prefix Assets run dev:backend` | Starts Express backend server with nodemon auto-restart (`http://localhost:5000`) |
+| `npm --prefix Assets run dev:client` | Alias for `npm --prefix Assets run dev:frontend` |
+| `npm --prefix Assets run dev:server` | Alias for `npm --prefix Assets run dev:backend` |
+| `npm --prefix Assets run build` | Builds the frontend production bundle into `Frontend/dist/` |
+| `npm --prefix Assets run start` | Starts the production backend server using Node.js |
+| `npm --prefix Assets run seed` | Seeds core demo accounts into MongoDB |
+| `npm --prefix Assets run seed:demo` | Seeds full demo ecosystem (users, lots, demand, benchmarks) |
+| `npm --prefix Assets run install:all` | Installs dependencies across Backend, Frontend, and Assets tooling |
+
+> **Direct Service Execution**:
+> You can also run commands directly within each service directory:
+> - Backend: `npm --prefix Backend run dev` (or `cd Backend && npm run dev`)
+> - Frontend: `npm --prefix Frontend run dev` (or `cd Frontend && npm run dev`)
 
 ### 🩺 Health Check Endpoint
 
@@ -206,7 +223,7 @@ KisanSetu provides role-aware authentication with JWT sessions and strict backen
 Seed local demo accounts with pre-hashed credentials:
 ```bash
 # Seed all 4 demo accounts into MongoDB
-npm run seed
+npm --prefix Assets run seed
 ```
 
 | Role | Email | Password | Assigned Dashboard |
@@ -287,7 +304,7 @@ KisanSetu is architected for zero-configuration modern cloud deployment:
 - **Environment**: Node.js
 - **Build Command**: `npm install`
 - **Start Command**: `npm start`
-- **Blueprint**: Included via [`render.yaml`](file:///d:/My%20codes/Projects/SIH26132/KisanSetu/render.yaml)
+- **Blueprint**: Included via [`Backend/render.yaml`](file:///d:/My%20codes/Projects/SIH26132/KisanSetu/Backend/render.yaml)
 - **Health Check Path**: `GET /api/health`
 - **Environment Variables**:
   | Variable | Production Value Example | Description |
@@ -311,7 +328,7 @@ KisanSetu includes an idempotent, deterministic demo seeder that populates all r
 
 ```bash
 # Seed all demo users, 30-day APMC prices, lots, demands, and baseline order:
-npm run seed:demo
+npm --prefix Assets run seed:demo
 ```
 
 ### Verified Demo Accounts

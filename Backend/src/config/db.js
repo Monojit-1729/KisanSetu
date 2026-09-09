@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 // Ensure .env is loaded if not already populated
 if (!process.env.MONGODB_URI) {
-  dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+  dotenv.config({ path: path.resolve(__dirname, '../../.env') });
   dotenv.config();
 }
 

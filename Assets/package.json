@@ -1,0 +1,21 @@
+{
+  "name": "kisansetu-orchestration",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KisanSetu - Project orchestration and assets tooling (SIH 26132)",
+  "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm --prefix ../Backend run dev\" \"npm --prefix ../Frontend run dev\"",
+    "dev:frontend": "npm --prefix ../Frontend run dev",
+    "dev:backend": "npm --prefix ../Backend run dev",
+    "dev:client": "npm --prefix ../Frontend run dev",
+    "dev:server": "npm --prefix ../Backend run dev",
+    "build": "npm --prefix ../Frontend run build",
+    "start": "npm --prefix ../Backend run start",
+    "seed": "npm --prefix ../Backend run seed",
+    "seed:demo": "npm --prefix ../Backend run seed:demo",
+    "install:all": "npm --prefix ../Backend install && npm --prefix ../Frontend install && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
