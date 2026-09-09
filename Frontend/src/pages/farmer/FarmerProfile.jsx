@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import farmerApi from '../../api/farmerApi.js';
+import {
+  INDIAN_STATES,
+  getDistrictsForState,
+  getTalukasForDistrict,
+  normalizeDistrict,
+} from './locations.js';
 
 const COMMON_CROPS = [
   'Onion',
@@ -51,11 +57,14 @@ export const FarmerProfile = () => {
         if (isMounted) {
           const p = res?.data?.profile;
           if (p) {
+            const rawDistrict = p.location?.district || '';
+            const normalizedDistrict = normalizeDistrict(rawDistrict);
+
             setFormData({
               fullName: p.fullName || user?.name || '',
               phone: p.phone || user?.phone || '',
               state: p.location?.state || 'Maharashtra',
-              district: p.location?.district || '',
+              district: normalizedDistrict,
               taluka: p.location?.taluka || '',
               village: p.location?.village || '',
               pincode: p.location?.pincode || '',
@@ -103,6 +112,37 @@ export const FarmerProfile = () => {
           : [...prev.cropInterests, crop],
       };
     });
+  };
+
+  const availableDistricts = getDistrictsForState(formData.state);
+  const availableTalukas = getTalukasForDistrict(formData.state, formData.district);
+
+  const handleStateChange = (e) => {
+    const newState = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      state: newState,
+      district: '',
+      taluka: '',
+    }));
+  };
+
+  const handleDistrictChange = (e) => {
+    const newDistrict = e.target.value;
+    const talukas = getTalukasForDistrict(formData.state, newDistrict);
+    setFormData((prev) => ({
+      ...prev,
+      district: newDistrict,
+      taluka: talukas.includes(prev.taluka) ? prev.taluka : '',
+    }));
+  };
+
+  const handleTalukaChange = (e) => {
+    const newTaluka = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      taluka: newTaluka,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -275,36 +315,81 @@ export const FarmerProfile = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">State</label>
-                  <input
-                    type="text"
-                    value={formData.state}
-                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    placeholder="State"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+                  <div className="relative">
+                    <select
+                      value={formData.state}
+                      onChange={handleStateChange}
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer"
+                    >
+                      {INDIAN_STATES.map((st) => (
+                        <option key={st} value={st}>
+                          {st}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">District *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    placeholder="e.g. Nashik, Pune, Ahmednagar"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+                  <div className="relative">
+                    <select
+                      required
+                      value={formData.district}
+                      onChange={handleDistrictChange}
+                      disabled={availableDistricts.length === 0}
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {availableDistricts.length === 0 ? '-- No districts available --' : '-- Select District --'}
+                      </option>
+                      {availableDistricts.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Taluka / Tehsil</label>
-                  <input
-                    type="text"
-                    value={formData.taluka}
-                    onChange={(e) => setFormData({ ...formData, taluka: e.target.value })}
-                    placeholder="e.g. Dindori, Niphad"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+                  <div className="relative">
+                    <select
+                      value={formData.taluka}
+                      onChange={handleTalukaChange}
+                      disabled={!formData.district || availableTalukas.length === 0}
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {!formData.district
+                          ? '-- Select District First --'
+                          : availableTalukas.length === 0
+                          ? '-- No talukas available --'
+                          : '-- Select Taluka / Tehsil --'}
+                      </option>
+                      {availableTalukas.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -345,11 +430,10 @@ export const FarmerProfile = () => {
                       key={crop}
                       type="button"
                       onClick={() => handleCropToggle(crop)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
-                        isSelected
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${isSelected
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
+                        }`}
                     >
                       {isSelected ? `✓ ${crop}` : `+ ${crop}`}
                     </button>
