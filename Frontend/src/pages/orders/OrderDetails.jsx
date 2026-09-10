@@ -331,21 +331,21 @@ export const OrderDetails = () => {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
                   Order Management Controls
                 </h4>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                   <input
                     type="text"
                     placeholder="Add an optional progress note..."
                     value={statusNote}
                     onChange={(e) => setStatusNote(e.target.value)}
-                    className="text-xs text-slate-900 bg-slate-50 border border-slate-300 rounded-xl p-2.5 flex-1 outline-none focus:border-emerald-500"
+                    className="text-xs text-slate-900 bg-slate-50 border border-slate-300 rounded-xl p-2.5 w-full md:flex-1 md:min-w-[200px] outline-none focus:border-emerald-500"
                   />
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap w-full md:w-auto justify-end">
                     <button
                       type="button"
                       disabled={actionLoading}
                       onClick={() => handleUpdateStatus(transitionConfig.next)}
-                      className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                      className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap flex-1 sm:flex-initial text-center"
                     >
                       {actionLoading ? 'Updating...' : `Advance: ${transitionConfig.label} →`}
                     </button>
@@ -354,7 +354,7 @@ export const OrderDetails = () => {
                       type="button"
                       disabled={actionLoading}
                       onClick={() => handleUpdateStatus('cancelled')}
-                      className="px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                      className="px-3.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-xs rounded-xl transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap flex-1 sm:flex-initial text-center"
                     >
                       Cancel Order
                     </button>

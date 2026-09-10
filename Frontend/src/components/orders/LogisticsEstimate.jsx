@@ -164,13 +164,13 @@ export const LogisticsEstimate = ({
               placeholder="Add optional carrier/dispatch update note..."
               value={noteInput}
               onChange={(e) => setNoteInput(e.target.value)}
-              className="text-xs text-slate-900 bg-slate-50 border border-slate-300 rounded-xl p-2.5 flex-1 outline-none focus:border-blue-500 w-full"
+              className="text-xs text-slate-900 bg-slate-50 border border-slate-300 rounded-xl p-2.5 w-full sm:flex-1 sm:min-w-[180px] outline-none focus:border-blue-500"
             />
             <button
               type="button"
               disabled={updating}
               onClick={() => handleAdvanceStatus(currentTransition.next)}
-              className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50 whitespace-nowrap shrink-0"
             >
               {updating ? 'Updating...' : `${currentTransition.label} →`}
             </button>

@@ -194,17 +194,17 @@ export const LotList = () => {
               ))}
             </select>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors"
+              className="flex-1 sm:flex-initial px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors cursor-pointer text-center"
             >
               Search
             </button>
             <button
               type="button"
               onClick={() => { setFilters({ cropName: '', district: '', quality: '' }); }}
-              className="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              className="flex-1 sm:flex-initial px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer text-center"
             >
               Clear
             </button>

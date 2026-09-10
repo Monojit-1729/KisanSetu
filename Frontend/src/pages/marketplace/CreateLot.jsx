@@ -255,7 +255,7 @@ export const CreateLot = () => {
                       key={g}
                       type="button"
                       onClick={() => set('quality', g)}
-                      className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${
+                      className={`flex-1 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold border transition-all min-w-0 ${
                         form.quality === g
                           ? 'bg-emerald-600 text-white border-emerald-600'
                           : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-400'
@@ -276,7 +276,7 @@ export const CreateLot = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
                 <FieldGroup label="Quantity *">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="number"
                       min="0.1"
@@ -284,12 +284,12 @@ export const CreateLot = () => {
                       placeholder="0.0"
                       value={form.quantity}
                       onChange={(e) => set('quantity', e.target.value)}
-                      className={`${inputCls} flex-1`}
+                      className={`${inputCls} w-full sm:flex-1 sm:min-w-[140px]`}
                     />
                     <select
                       value={form.unit}
                       onChange={(e) => set('unit', e.target.value)}
-                      className={`${inputCls} w-36`}
+                      className={`${inputCls} w-full sm:w-36 shrink-0`}
                     >
                       {PRODUCE_UNITS.map((u) => (
                         <option key={u.value} value={u.value}>

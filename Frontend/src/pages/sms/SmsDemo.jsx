@@ -369,12 +369,12 @@ export const SmsDemo = () => {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type SMS e.g. SELL 2000 TOMATO"
                 disabled={loading}
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 font-mono outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
+                className="flex-1 min-w-0 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 font-mono outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={loading || !inputMessage.trim()}
-                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 shadow-md shadow-emerald-500/10"
+                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 shadow-md shadow-emerald-500/10 shrink-0"
               >
                 <span>Send</span>
                 <span>➔</span>
