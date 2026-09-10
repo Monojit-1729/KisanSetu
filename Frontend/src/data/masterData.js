@@ -19,6 +19,10 @@ import {
   getTalukasForDistrict,
   INDIA_LOCATIONS,
   MAHARASHTRA_LOCATIONS,
+  getVillagesForSubDistrictSync,
+  getVillagesForSubDistrictAsync,
+  resolvePincodeForVillage,
+  useVillages,
 } from './locations.js';
 
 // Re-export all location utilities
@@ -32,6 +36,10 @@ export {
   getTalukasForDistrict,
   INDIA_LOCATIONS,
   MAHARASHTRA_LOCATIONS,
+  getVillagesForSubDistrictSync,
+  getVillagesForSubDistrictAsync,
+  resolvePincodeForVillage,
+  useVillages,
 };
 
 /**

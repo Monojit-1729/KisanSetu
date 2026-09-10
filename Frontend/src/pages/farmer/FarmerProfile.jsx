@@ -12,6 +12,7 @@ import {
   SOIL_TYPES,
   IRRIGATION_SOURCES,
   SUPPORTED_LANGUAGES,
+  useVillages,
 } from '../../data/masterData.js';
 
 export const FarmerProfile = () => {
@@ -108,6 +109,11 @@ export const FarmerProfile = () => {
   const availableDistricts = getDistrictsForState(formData.state);
   const availableSubDistricts = getSubDistrictsForDistrict(formData.state, formData.district);
   const subDistrictTerm = getSubDistrictTermForState(formData.state);
+  const { villages: availableVillages, loading: villagesLoading } = useVillages(
+    formData.state,
+    formData.district,
+    formData.taluka
+  );
 
   const handleStateChange = (e) => {
     const newState = e.target.value;
@@ -116,16 +122,19 @@ export const FarmerProfile = () => {
       state: newState,
       district: '',
       taluka: '',
+      village: '',
+      pincode: '',
     }));
   };
 
   const handleDistrictChange = (e) => {
     const newDistrict = e.target.value;
-    const subs = getSubDistrictsForDistrict(formData.state, newDistrict);
     setFormData((prev) => ({
       ...prev,
       district: newDistrict,
-      taluka: subs.includes(prev.taluka) ? prev.taluka : '',
+      taluka: '',
+      village: '',
+      pincode: '',
     }));
   };
 
@@ -134,8 +143,28 @@ export const FarmerProfile = () => {
     setFormData((prev) => ({
       ...prev,
       taluka: newSubDistrict,
+      village: '',
+      pincode: '',
     }));
   };
+
+  const handleVillageChange = (e) => {
+    const selectedVillageName = e.target.value;
+    const villageObj = availableVillages.find(
+      (v) => v.name.toLowerCase() === selectedVillageName.toLowerCase() || v.code === selectedVillageName
+    );
+    const resolvedPin = villageObj?.pincode || (Array.isArray(villageObj?.pincodes) ? villageObj.pincodes[0] : '') || '';
+    setFormData((prev) => ({
+      ...prev,
+      village: selectedVillageName,
+      pincode: resolvedPin,
+    }));
+  };
+
+  const currentVillageObj = availableVillages.find(
+    (v) => v.name.toLowerCase() === (formData.village || '').toLowerCase()
+  );
+  const currentVillagePins = currentVillageObj?.pincodes || (formData.pincode ? [formData.pincode] : []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -403,22 +432,97 @@ export const FarmerProfile = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">Village & Pincode</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <input
-                      type="text"
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Village *
+                  </label>
+                  <div className="relative">
+                    <select
                       value={formData.village}
-                      onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                      placeholder="Village"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                    />
+                      onChange={handleVillageChange}
+                      disabled={!formData.taluka || villagesLoading}
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      <option value="">
+                        {!formData.taluka
+                          ? `-- Select ${subDistrictTerm || 'Sub-district'} First --`
+                          : villagesLoading
+                          ? '-- Loading official villages... --'
+                          : availableVillages.length === 0
+                          ? '-- No official villages found --'
+                          : '-- Select Village --'}
+                      </option>
+                      {availableVillages.map((v) => (
+                        <option key={v.code || v.name} value={v.name}>
+                          {v.name} {v.pincode ? `(${v.pincode})` : ''}
+                        </option>
+                      ))}
+                      {formData.village &&
+                        !availableVillages.some(
+                          (v) => v.name.toLowerCase() === formData.village.toLowerCase()
+                        ) && (
+                          <option key={formData.village} value={formData.village}>
+                            {formData.village} (Current / Legacy)
+                          </option>
+                        )}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  {availableVillages.length > 0 && (
+                    <p className="text-[11px] text-slate-400 mt-1 px-1">
+                      {availableVillages.length} official LGD villages available
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Postal PIN Code (Auto-Resolved)
+                  </label>
+                  {currentVillagePins.length > 1 ? (
+                    <div className="relative">
+                      <select
+                        value={formData.pincode}
+                        onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                        disabled={!formData.village}
+                        className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                      >
+                        {currentVillagePins.map((p) => (
+                          <option key={p} value={p}>
+                            {p} {p === '422206' ? '(Primary / Local Area)' : p === '422207' ? '(Janori B.O)' : '(Official Postal Code)'}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  ) : (
                     <input
                       type="text"
+                      readOnly
+                      disabled={!formData.village}
                       value={formData.pincode}
-                      onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                      placeholder="Pincode"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      placeholder={!formData.village ? 'Auto-populated on village selection' : 'Resolving PIN...'}
+                      className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-mono text-slate-700 cursor-not-allowed focus:outline-none"
                     />
+                  )}
+                  <div className="flex items-center justify-between text-[11px] mt-1 px-1">
+                    {formData.pincode ? (
+                      <span className="text-emerald-700 font-medium flex items-center gap-1">
+                        <span>✓</span> Auto-resolved from LGD / Postal Directory
+                      </span>
+                    ) : (
+                      <span className="text-slate-400">Pincode resolves automatically</span>
+                    )}
+                    {currentVillagePins.length > 1 && (
+                      <span className="text-amber-700 font-medium">Multiple official PINs available</span>
+                    )}
                   </div>
                 </div>
               </div>

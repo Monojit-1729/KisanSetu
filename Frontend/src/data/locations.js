@@ -7031,3 +7031,11 @@ export const getTalukasForDistrict = (state, district) => {
 };
 
 export const MAHARASHTRA_LOCATIONS = INDIA_LOCATIONS['Maharashtra'].districts;
+
+// Village & Pincode Authoritative Lookups & Hooks
+export {
+  getVillagesForSubDistrictSync,
+  getVillagesForSubDistrictAsync,
+  resolvePincodeForVillage,
+  useVillages,
+} from './villageService.js';
